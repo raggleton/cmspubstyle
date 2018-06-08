@@ -60,8 +60,48 @@ def find_input_files(tex_file):
     return files_dict
 
 
+def find_command_text(filename, command):
+    """Pull the text inside a command from the file"""
+    bracket_counter = 0
+    text = []
+    found_start = False
+    completed = False
+
+    command = command.lstrip("\\")
+
+    with open(filename) as f:
+        for line in f:
+            if completed:
+                break
+
+            this_line = line
+
+            if not found_start and "\\"+command in line:
+                this_line = line.strip().split(command)[1]
+                found_start = True
+
+            # Find matching bracket by counting opening/closing brackets
+            if found_start:
+                for c in this_line:
+                    if c == "{":
+                        bracket_counter += 1
+                    elif c == "}":
+                        bracket_counter -= 1
+                    if bracket_counter == 0:
+                        completed = True
+                        break
+                    # Ignore the first opening {
+                    if not (c == "{" and bracket_counter == 1):
+                        text.append(c)
+
+    return ("".join(text)).strip()
+
+
 def check_root_file(filename):
-    pass
+    abstract_text = find_command_text(filename, "abstract")
+    title_text = find_command_text(filename, "title")
+    print(abstract_text)
+    print(title_text)
 
 
 def check_defs_files(filename):
