@@ -60,7 +60,7 @@ def find_input_files(tex_file):
     return files_dict
 
 
-def find_command_text(filename, command):
+def extract_command_text(filename, command):
     """Pull the text inside a command from the file"""
     command = command.lstrip("\\")
 
@@ -97,8 +97,8 @@ def check_text(text):
 
 
 def check_root_file(filename):
-    abstract_text = find_command_text(filename, "abstract")
-    title_text = find_command_text(filename, "title")
+    abstract_text = extract_command_text(filename, "abstract")
+    title_text = extract_command_text(filename, "title")
     print(abstract_text)
     print(title_text)
 
