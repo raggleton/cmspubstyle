@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 
-"""Check your CMS document against PubComm guidelines."""
+"""Check your CMS document against PubComm guidelines.
+
+References:
+https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PubGuidelines
+https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionPrep
+https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionFormat
+"""
 
 
 import os
