@@ -62,39 +62,38 @@ def find_input_files(tex_file):
 
 def find_command_text(filename, command):
     """Pull the text inside a command from the file"""
-    bracket_counter = 0
-    text = []
-    found_start = False
-    completed = False
-
     command = command.lstrip("\\")
 
     with open(filename) as f:
-        for line in f:
-            if completed:
-                break
+        text = f.readlines()
 
-            this_line = line
+    # Much easier to convert to one line of text than worrying about linebreaks
+    text = ''.join([t.strip('\n') for t in text])
 
-            if not found_start and "\\"+command in line:
-                this_line = line.strip().split(command)[1]
-                found_start = True
+    latex_cmd = "\\"+command+"{"
+    if latex_cmd not in text:
+        return None
 
-            # Find matching bracket by counting opening/closing brackets
-            if found_start:
-                for c in this_line:
-                    if c == "{":
-                        bracket_counter += 1
-                    elif c == "}":
-                        bracket_counter -= 1
-                    if bracket_counter == 0:
-                        completed = True
-                        break
-                    # Ignore the first opening {
-                    if not (c == "{" and bracket_counter == 1):
-                        text.append(c)
+    # Start inside command, and count opening/closing brackets. Then we can
+    # determine properly which is the right closing bracket.
+    this_text = text.split(latex_cmd)[1]
+    bracket_counter = 1
+    command_text = []
+    for c in this_text:
+        if c == "{":
+            bracket_counter += 1
+        elif c == "}":
+            bracket_counter -= 1
+        if bracket_counter == 0:
+            break
+        command_text.append(c)
 
-    return ("".join(text)).strip()
+    return ("".join(command_text)).strip()
+
+
+def check_text(text):
+    """Method to check any piece of main text (not bib)"""
+    pass
 
 
 def check_root_file(filename):
