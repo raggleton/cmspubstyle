@@ -208,7 +208,7 @@ def check_args(args):
         raise IOError("Input file does not exist")
 
 
-def find_input_files(tex_file):
+def extract_input_files(tex_file):
     """Return dict of included files in main tex file, split by category."""
     files_dict = OrderedDict()
     # the main tex file with abstract, title
@@ -229,42 +229,6 @@ def find_input_files(tex_file):
             files_dict['contents'].append(filename)
 
     return files_dict
-
-
-def extract_command_text(text, command):
-    """Pull the text inside a command from the file"""
-    command = command.lstrip("\\")
-
-    # Much easier to convert to one line of text than worrying about linebreaks
-    text = ''.join([t.strip('\n') for t in text])
-
-    latex_cmd = "\\"+command+"{"
-    if latex_cmd not in text:
-        return None
-
-    # Start inside command, and count opening/closing brackets. Then we can
-    # determine properly which is the right closing bracket.
-    this_text = text.split(latex_cmd)[1]
-    bracket_counter = 1
-    command_text = []
-    for c in this_text:
-        if c == "{":
-            bracket_counter += 1
-        elif c == "}":
-            bracket_counter -= 1
-        if bracket_counter == 0:
-            break
-        command_text.append(c)
-
-    return ("".join(command_text)).strip()
-
-
-def extract_environment_text(filename, environment):
-    with open(filename) as f:
-        text = f.read()
-
-    if "\\begin{"+environment not in text or "\\end{"+environment not in text:
-        return None
 
 
 def check_text(text):
@@ -327,7 +291,7 @@ def main(in_args):
     args = parser.parse_args(in_args)
     check_args(args)
 
-    files_dict = find_input_files(args.input)
+    files_dict = extract_input_files(args.input)
     # print(files_dict)
 
     root_results = check_root_file(files_dict['root'])
