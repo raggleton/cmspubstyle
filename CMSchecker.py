@@ -102,8 +102,7 @@ class Text(object):
                 yield these_lines
 
     def iter_inline_maths(self, delim="$"):
-        """"""
-        lines = []
+        """Iterate over text inside matching delim, e.g. $...$"""
         matches = list(re.finditer(r"\%s" % delim, self.text_as_one_line))
         for m1, m2 in zip(matches[:-1:2], matches[1::2]):
             # Assumes all contents on one TextLine!
@@ -114,49 +113,43 @@ class Text(object):
             this_text = self.text_as_one_line[m1.start()+1:m2.start()]
             # FIXME: what should char_num_start be doing?
             new_line = TextLine(line_num=l.line_num, char_num_start=m1.start()+1, text=this_text)
-            lines.append(new_line)
-        return lines
+            yield new_line
 
     def iter_command(self, command):
-        char_ind_pairs = []
+        """Iterate over sections of text inside a \<command>{...}"""
         stack = []
 
         for m in re.finditer(r"\\"+command.lstrip("\\")+"{", self.text_as_one_line):
+            # Use stack method to look for matching closing bracket 
+            # - could be more {} inside
             stack.append(m.end()-1)
             for c_ind, c in enumerate(self.text_as_one_line[m.end():], m.end()):
                 if c == "{":
                     stack.append(c_ind)
                 elif c == "}":
                     if len(stack) == 1:
-                        char_ind_pairs.append((stack.pop()+1, c_ind))
+                        s, e = stack.pop()+1, c_ind
+                        # Handle the relevant line(s), chopping the text appropriately
+                        these_lines = self.find_lines_with_char_num_range(s, e-1)
+
+                        first_line_char_num = these_lines[0].char_num_start
+                        offset_start = s - first_line_char_num + 1
+                        these_lines[0] = TextLine(line_num=these_lines[0].line_num,
+                                                  char_num_start=s+1,
+                                                  text=these_lines[0].text[offset_start:])
+
+                        last_line_char_num = these_lines[-1].char_num_start
+                        offset_end = e - last_line_char_num + 1
+                        these_lines[-1] = TextLine(line_num=these_lines[-1].line_num,
+                                                   char_num_start=s,
+                                                   text=these_lines[-1].text[:offset_end])
+                        yield these_lines
                         break
                     else:
                         stack.pop()
 
-        lines = []
-
-        # Handle the relevant line(s), chopping the text appropriately
-        for s, e in char_ind_pairs:
-            these_lines = self.find_lines_with_char_num_range(s, e-1)
-
-            first_line_char_num = these_lines[0].char_num_start
-            offset_start = s - first_line_char_num + 1
-            these_lines[0] = TextLine(line_num=these_lines[0].line_num,
-                                      char_num_start=s+1,
-                                      text=these_lines[0].text[offset_start:])
-
-            last_line_char_num = these_lines[-1].char_num_start
-            offset_end = e - last_line_char_num + 1
-            these_lines[-1] = TextLine(line_num=these_lines[-1].line_num,
-                                       char_num_start=s,
-                                       text=these_lines[-1].text[:offset_end])
-
-            lines.append(these_lines)
-
-        return lines
-
     def find_iter(self, pattern):
-        results = []
+        """Iterate over search results"""
         for m in pattern.finditer(self.text_as_one_line):
             # TODO what if >1 group?
             matching_text = m.groups()
@@ -183,8 +176,8 @@ class Text(object):
                     found_start = True
 
             print(lines)
-            results.append((m, lines))
-        return results
+
+            yield (m, lines)
 
 
 class Error(object):

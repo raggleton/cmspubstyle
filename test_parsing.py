@@ -54,24 +54,27 @@ def test_environment_outer():
 
 
 def test_environment_inner():
-    env_lines = list(t.iter_environment("center"))
-    expect = [[
-        TextLine(line_num=13, char_num_start=1, text=r"    It's gonna take a lot to take me away from you"),
-        TextLine(line_num=14, char_num_start=1, text=r"    There's nothing that a $100$ men or more could ever do"),
-        TextLine(line_num=15, char_num_start=1, text=r"    I bless the rains down in Africa"),
-        TextLine(line_num=16, char_num_start=1, text=r"    Gonna take some time to do the things we never had"),
-        TextLine(line_num=17, char_num_start=1, text=r"    \caption{Bah bah}\label{chorus1}"),
-    ]]
-    for e, m in zip(expect[0], env_lines[0]):
-        assert(e.line_num == m.line_num)
-        assert(e.text == m.text)
+    env_lines = t.iter_environment("center")
+    expect = [
+        [
+            TextLine(line_num=13, char_num_start=1, text=r"    It's gonna take a lot to take me away from you"),
+            TextLine(line_num=14, char_num_start=1, text=r"    There's nothing that a $100$ men or more could ever do"),
+            TextLine(line_num=15, char_num_start=1, text=r"    I bless the rains down in Africa"),
+            TextLine(line_num=16, char_num_start=1, text=r"    Gonna take some time to do the things we never had"),
+            TextLine(line_num=17, char_num_start=1, text=r"    \caption{Bah bah}\label{chorus1}"),
+        ]
+    ]
+    for e, m in zip(expect, env_lines):
+        for ee, mm in zip(e, m):
+            assert(ee.line_num == mm.line_num)
+            assert(ee.text == mm.text)
 
 
 def test_command():
     cmd_lines = t.iter_command("section")
-    expect = [[
-        TextLine(line_num=1, char_num_start=1, text=r"Corrections for $\PT > 50 \GeV$"),
-    ]]
+    expect = [
+        [TextLine(line_num=1, char_num_start=1, text=r"Corrections for $\PT > 50 \GeV$")]
+    ]
     for e, m in zip(expect, cmd_lines):
         for ee, mm in zip(e, m):
             assert(ee.line_num == mm.line_num)
