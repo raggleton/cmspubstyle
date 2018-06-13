@@ -24,7 +24,6 @@ tests.extend([
     TestRule(rule=rules[-1], text="$p_{\mathrm{rec}}$", should_pass=True),
 ])
 
-
 rules.append(
     Rule(description="Use \\ie macro",
          re_pattern=re.compile(r"i\.e\."),
@@ -33,4 +32,24 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text="i.e."),
     TestRule(rule=rules[-1], text="\\ie", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\eg macro",
+         re_pattern=re.compile(r"e\.g\."),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="e.g."),
+    TestRule(rule=rules[-1], text="\\eg, he's a pain", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\etal macro",
+         re_pattern=re.compile(r"et al"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="Ram et al"),
+    TestRule(rule=rules[-1], text="Dave \\etal", should_pass=True),
 ])
