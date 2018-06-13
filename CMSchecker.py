@@ -18,174 +18,17 @@ import os
 import re
 import sys
 import argparse
-from collections import OrderedDict, namedtuple
+from itertools import chain
+from collections import OrderedDict
 from bisect import bisect_left
 
-
-def find_ge(a, x):
-    'Find leftmost item greater than or equal to x'
-    i = bisect_left(a, x)
-    if i != len(a):
-        return a[i]
-    raise ValueError
-
-
-TextLine = namedtuple("TextLine", ["line_num", "char_num_start", "text"])
+from rules import normal_text
+from rules import latex
+from rules.classes import ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
 
 
 def join_textlines(strings):
     return ''.join([x.text.rstrip('\n') for x in strings])
-
-
-class Text(object):
-    """Class to aid storage & finding in lines of latex"""
-
-    def __init__(self, text, line_num_start=1):
-        self.text_contents = []
-        for ind, line in enumerate(text, line_num_start):
-            # don't include the newline (which python counts as 1 char) since
-            # we remove it when searching, and it would screw up looking for
-            # relevant line(s)
-            char_num_start = sum([len(l.text.rstrip('\n')) for l in self.text_contents]) + 1
-            this_line = TextLine(line_num=ind, char_num_start=char_num_start, text=line)
-            self.text_contents.append(this_line)
-        self.create_one_str_from_contents()
-
-    def create_one_str_from_contents(self):
-        """Store text as one long line to make searching across lines easier"""
-        self.text_as_one_line = ''.join([x.text.rstrip("\n") for x in self.text_contents])
-
-    def find_line_with_char_num(self, char_num):
-        """Select relevant line, based on which characters are involved"""
-        # TODO: use bisect?
-        for ind, line in enumerate(self.text_contents):
-            if (line.char_num_start <= char_num and
-                (ind == len(self.text_contents)-1 or
-                 self.text_contents[ind+1].char_num_start > char_num)):
-                return line
-
-    def find_lines_with_char_num_range(self, char_num_start, char_num_end):
-        # Select relevant lines, based on which characters are involved
-        lines = []
-        found_start = False
-        for ind, x in enumerate(self.text_contents):
-            if found_start:
-                if x.char_num_start > char_num_end:
-                    break
-                lines.append(x)
-            elif (char_num_start >= x.char_num_start and
-                  self.text_contents[ind+1].char_num_start > char_num_start):
-                # TODO: use bisect?
-                lines.append(x)
-                found_start = True
-        return lines
-
-    def iter_environment(self, environment):
-        """Return contents of environments"""
-        start_env = "\\begin{"+environment
-        end_env = "\\end{"+environment
-        if start_env not in self.text_as_one_line:
-            yield None
-            return
-        # FIXME: this assumes everything on own lines,
-        # no pre/post extra bits we dont want - issue?
-        start_ind, end_ind = None, None
-        for ind, line in enumerate(self.text_contents):
-            if start_env in line.text:
-                start_ind = ind
-            if end_env in line.text:
-                end_ind = ind
-                if not (start_ind and end_ind):
-                    raise RuntimeError("Found end of environment but not beginning: %s" % line)
-                these_lines = self.text_contents[start_ind+1:end_ind]
-                start_ind, end_ind = None, None
-                yield these_lines
-
-    def iter_inline_maths(self, delim="$"):
-        """Iterate over text inside matching delim, e.g. $...$"""
-        matches = list(re.finditer(r"\%s" % delim, self.text_as_one_line))
-        for m1, m2 in zip(matches[:-1:2], matches[1::2]):
-            # Assumes all contents on one TextLine!
-            l = self.find_line_with_char_num(m1.start()+1)
-            l2 = self.find_line_with_char_num(m2.end())
-            if l2.line_num != l.line_num:
-                raise RuntimeError("Your inline maths spans 2 lines - I don't knwo how to handle that")
-            this_text = self.text_as_one_line[m1.start()+1:m2.start()]
-            # FIXME: what should char_num_start be doing?
-            new_line = TextLine(line_num=l.line_num, char_num_start=m1.start()+1, text=this_text)
-            yield new_line
-
-    def iter_command(self, command):
-        """Iterate over sections of text inside a \<command>{...}"""
-        stack = []
-
-        for m in re.finditer(r"\\"+command.lstrip("\\")+"{", self.text_as_one_line):
-            # Use stack method to look for matching closing bracket 
-            # - could be more {} inside
-            stack.append(m.end()-1)
-            for c_ind, c in enumerate(self.text_as_one_line[m.end():], m.end()):
-                if c == "{":
-                    stack.append(c_ind)
-                elif c == "}":
-                    if len(stack) == 1:
-                        s, e = stack.pop()+1, c_ind
-                        # Handle the relevant line(s), chopping the text appropriately
-                        these_lines = self.find_lines_with_char_num_range(s, e-1)
-
-                        first_line_char_num = these_lines[0].char_num_start
-                        offset_start = s - first_line_char_num + 1
-                        these_lines[0] = TextLine(line_num=these_lines[0].line_num,
-                                                  char_num_start=s+1,
-                                                  text=these_lines[0].text[offset_start:])
-
-                        last_line_char_num = these_lines[-1].char_num_start
-                        offset_end = e - last_line_char_num + 1
-                        these_lines[-1] = TextLine(line_num=these_lines[-1].line_num,
-                                                   char_num_start=s,
-                                                   text=these_lines[-1].text[:offset_end])
-                        yield these_lines
-                        break
-                    else:
-                        stack.pop()
-
-    def find_iter(self, pattern):
-        """Iterate over search results"""
-        for m in pattern.finditer(self.text_as_one_line):
-            # TODO what if >1 group?
-            matching_text = m.groups()
-
-            lines = []
-
-            # need the +1 on .start() as re uses 0-indexing, whilst .end() alread has +1
-            start, end = m.start() + 1, m.end()
-            print(start, end)
-
-            # Select relevant lines, based on which characters are involved
-            found_start = False
-            for ind, x in enumerate(self.text_contents):
-                if found_start:
-                    if x.char_num_start > m.end():
-                        break
-                    lines.append(x)
-                elif (start >= x.char_num_start and
-                      self.text_contents[ind+1].char_num_start > start):
-                    # Look for first line that contains one of our chars
-                    # TODO: use bisect?
-                    print(x)
-                    lines.append(x)
-                    found_start = True
-
-            print(lines)
-
-            yield (m, lines)
-
-
-class Error(object):
-
-    def __init__(self, description, re_pattern, where):
-        self.description = description
-        self.re_pattern = re_pattern
-        self.where = where
 
 
 def create_arg_parser():
@@ -199,8 +42,6 @@ def create_arg_parser():
 
 def check_args(args):
     """Check all user arguments are sane, otherwise raise errors"""
-    print(args)
-
     if not args.input.endswith(".tex"):
         raise RuntimeError("Your input file must be a .tex")
 
@@ -231,15 +72,26 @@ def extract_input_files(tex_file):
     return files_dict
 
 
+def report_error(broken_rule):
+    """Tell the user they broke a rule"""
+    print(broken_rule.match, broken_rule.match.group(), "  [", broken_rule.rule.description, "]")
+
+
 def check_text(text):
     """Method to check any piece of main text (not bib)"""
-    # TODO check which of standard + new newcommands can be used e.g. \fbinv
-    checks = [
-        Error(description="Duplicate words",
-              re_pattern=re.compile(r"[\s.](\w+)[\s.]+\1", re.IGNORECASE),
-              where=None),
-    ]
-    return True
+    # print("Checking", text.text_contents)
+    for rule in chain(normal_text.rules, latex.rules):
+        if isinstance(rule.where, ALL):
+            for match, lines in text.find_iter(rule.re_pattern):
+                yield RuleBroken(rule=rule, match=match, lines=lines)
+
+
+def check_and_report_errors(text):
+    """"""
+    problems = []
+    for broken_rule in check_text(text):
+        report_error(broken_rule)
+        problems.append(broken_rule)
 
 
 def check_root_file(filename):
@@ -249,30 +101,38 @@ def check_root_file(filename):
 
     root_text = Text(text)
 
-    abstract_text = root_text.iter_command("abstract")
-    title_text = root_text.iter_command("title")
+    abstract_text = Text(list(root_text.iter_command("abstract"))[0])
+    print("-"*80)
+    print(filename, "(ABSTRACT):")
+    print("-"*80)
+    abstract_problems = check_and_report_errors(abstract_text)
 
-    # abstract_text = extract_command_text(text, "abstract")
-    # title_text = extract_command_text(text, "title")
-    # print(abstract_text)
-    # print(title_text)
-    # abstract_results = check_text(abstract_text)
-    # title_results = check_text(title_text)
+    # title_text_lines = Text(list(root_text.iter_command("title"))[0])
+    # print("-"*80)
+    # print(filename, "(TITLE):")
+    # print("-"*80)
+    # title_problems = check_and_report_errors(title_text)
 
-    for c in root_text.iter_command("HERWIG"):
-        print(c)
+    # for c in root_text.iter_command("HERWIG"):
+    #     print(c)
 
-    for c in root_text.iter_command("caption"):
-        print(c)
+    # for c in root_text.iter_command("caption"):
+    #     print(c)
 
-    for c in root_text.iter_command("drums"):
-        print(c)
+    # for c in root_text.iter_command("drums"):
+    #     print(c)
 
-    # for m in root_text.iter_inline_maths("$"):
+    # for m in root_text.iter_inline_delim("$"):
+    #     print(m)
+
+    # for m in root_text.iter_inline_delim("$$"):
     #     print(m)
 
     # for a in root_text.iter_environment("figure"):
     #     print(join_textlines(a))
+
+    # for c in root_text.find_iter(re.compile(r"[\s.](\w+)[\s.]+\1", re.IGNORECASE)):
+    #     print(c)
 
     # return abstract_results + title_results
 
@@ -292,7 +152,7 @@ def main(in_args):
     check_args(args)
 
     files_dict = extract_input_files(args.input)
-    # print(files_dict)
+
 
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'])
