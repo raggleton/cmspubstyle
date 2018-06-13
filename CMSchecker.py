@@ -79,7 +79,6 @@ def report_error(broken_rule):
 
 def check_text(text):
     """Method to check any piece of main text (not bib)"""
-    # print("Checking", text.text_contents)
     for rule in chain(normal_text.rules, latex.rules):
         if isinstance(rule.where, ALL):
             for match, lines in text.find_iter(rule.re_pattern):
@@ -87,7 +86,7 @@ def check_text(text):
 
 
 def check_and_report_errors(text):
-    """"""
+    """Check text for all errors, and print them out"""
     problems = []
     for broken_rule in check_text(text):
         report_error(broken_rule)
@@ -97,14 +96,13 @@ def check_and_report_errors(text):
 def check_root_file(filename):
     """Check elements of the main TeX file"""
     with open(filename) as f:
-        text = f.readlines()
-
-    root_text = Text(text)
+        root_text = Text(f.readlines())
 
     abstract_text = Text(list(root_text.iter_command("abstract"))[0])
-    print("-"*80)
+    separator = "-"*80
+    print(separator)
     print(filename, "(ABSTRACT):")
-    print("-"*80)
+    print(separator)
     abstract_problems = check_and_report_errors(abstract_text)
 
     # title_text_lines = Text(list(root_text.iter_command("title"))[0])
@@ -131,19 +129,22 @@ def check_root_file(filename):
     # for a in root_text.iter_environment("figure"):
     #     print(join_textlines(a))
 
-    # for c in root_text.find_iter(re.compile(r"[\s.](\w+)[\s.]+\1", re.IGNORECASE)):
-    #     print(c)
-
     # return abstract_results + title_results
 
 
 def check_content_files(filenames):
-    for f in filenames:
-        pass
+    """Iterate through normal latex files and check each"""
+    for filename in filenames:
+        print(separator)
+        print(filename)
+        print(separator)
+        with open(filename) as f:
+            text = Text(f.readlines())
+        check_and_report_errors(Text)
 
 
 def check_bib_files(filenames):
-    pass
+    return True
 
 
 def main(in_args):
@@ -152,7 +153,6 @@ def main(in_args):
     check_args(args)
 
     files_dict = extract_input_files(args.input)
-
 
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'])
