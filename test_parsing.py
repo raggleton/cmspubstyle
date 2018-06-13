@@ -6,14 +6,14 @@ I hear the drums \echoing{tonight}
 But she hears only whispers of some quiet conversation
 She's coming in, $12:30$ flight
 The moonlit wings reflect the stars that guide me towards salvation
-I stopped an old man along the way
+I stopped an old man along the way way
 Hoping to find some long forgotten words or ancient melodies
-He turned to me as if to say, "Hurry boy, it's waiting there for you"
+He turned to me as if to say, ``Hurry boy, it's waiting there for you''
 \drums{yes}\drums{big}
 \begin{chorus}
 \begin{center}
     It's gonna take a lot to take me away from you
-    There's nothing that a $100$ men or more could ever do
+    There's nothing that a $$100$$ men or more could ever do
     I bless the rains down in Africa
     Gonna take some time to do the things we never had
     \caption{Bah bah}\label{chorus1}
@@ -22,14 +22,23 @@ He turned to me as if to say, "Hurry boy, it's waiting there for you"
 
 """
 
+# DO ALL IMPORTS HERE TO AVOID SCREWING UP LINE NUMBERS
+import re
 
 t = Text(doc.splitlines())
 
 def test_inline_maths():
-    math_lines = t.iter_inline_maths()
+    math_lines = t.iter_inline_delim("$")
     expect = [
         TextLine(line_num=1, char_num_start=1, text=r"\PT > 50 \GeV"),
         TextLine(line_num=5, char_num_start=1, text="12:30"),
+    ]
+    for e, m in zip(expect, math_lines):
+        assert(e.line_num == m.line_num)
+        assert(e.text == m.text)
+
+    math_lines = t.iter_inline_delim(delim="$$")
+    expect = [
         TextLine(line_num=14,char_num_start=1, text="100")
     ]
     for e, m in zip(expect, math_lines):
@@ -87,5 +96,15 @@ def test_command():
     ]
     for e, m in zip(expect, cmd_lines):
         for ee, mm in zip(e, m):
+            assert(ee.line_num == mm.line_num)
+            assert(ee.text == mm.text)
+
+def test_find():
+    find_results = t.find_iter(re.compile(r"[\s.](\w+)[\s.]+\1", re.IGNORECASE))
+    expect = [
+        [TextLine(line_num=7, char_num_start=1, text="I stopped an old man along the way way")]
+    ]
+    for e, m in zip(expect, find_results):
+        for ee, mm in zip(e, m[1]):
             assert(ee.line_num == mm.line_num)
             assert(ee.text == mm.text)
