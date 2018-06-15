@@ -112,7 +112,9 @@ rules.append(
 )
 tests.extend([
     TestRule(rule=rules[-1], text="b-quark"),
+    TestRule(rule=rules[-1], text=r"\cPQb-quark"),
     TestRule(rule=rules[-1], text=r"b quark", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\cPQb quark", should_pass=True),
 ])
 
 rules.append(
@@ -123,6 +125,8 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text="b-tag"),
     TestRule(rule=rules[-1], text=r"b tag", should_pass=True),
+    TestRule(rule=rules[-1], text=r"{\PW} tag", should_pass=True),
+    TestRule(rule=rules[-1], text=r"b-tagged", should_pass=True),
     TestRule(rule=rules[-1], text=r"b-tagged", should_pass=True),
 ])
 

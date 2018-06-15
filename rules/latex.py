@@ -19,6 +19,7 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text="$p_T$"),
     TestRule(rule=rules[-1], text="$p_{V}$"),
+    TestRule(rule=rules[-1], text="$p_{J2}$"),
     TestRule(rule=rules[-1], text="$p_{rec}$"),
     TestRule(rule=rules[-1], text="$p_{\mathrm{T}}$", should_pass=True),
     TestRule(rule=rules[-1], text="$p_{\mathrm{rec}}$", should_pass=True),
