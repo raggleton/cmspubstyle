@@ -193,37 +193,35 @@ class Location(object):
         """Overrides the default implementation (unnecessary in Python 3)"""
         return not self.__eq__(other)
 
+    def to_str(self):
+        opt = "" if self.opt is None else self.opt
+        return self.__class__.__name__+'('+opt+')'
+
+    def __str__(self):
+        return self.to_str()
+
+    def __repr__(self):
+        return self.to_str()
+
 
 class ALL(Location):
     def __init__(self, *args, **kwargs):
         super(ALL, self).__init__(*args, **kwargs)
-
-    def __str__(self):
-        return 'ALL'
 
 
 class ENVIRONMENT(Location):
     def __init__(self, *args, **kwargs):
         super(ENVIRONMENT, self).__init__(*args, **kwargs)
 
-    def __str__(self):
-        return 'ENVIRONMENT{'+self.opt+'}'
-
 
 class INLINE(Location):
     def __init__(self, *args, **kwargs):
         super(INLINE, self).__init__(*args, **kwargs)
 
-    def __str__(self):
-        return 'INLINE{'+self.opt+'}'
-
 
 class COMMAND(Location):
     def __init__(self, *args, **kwargs):
         super(COMMAND, self).__init__(*args, **kwargs)
-
-    def __str__(self):
-        return 'COMMAND{'+self.opt+'}'
 
 
 # Classes to handle the actual grammar rules & their tests
