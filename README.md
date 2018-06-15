@@ -28,7 +28,41 @@ Each instance must have the `Rule` object which it is testing, the sample text s
 
 The more test cases the better!
 
-You should think about: what is the usual user error, what are edge cases, and which correct texts might trigger the rule accidentally.
+You should think about adding tests that cover a variety of scenarios: 
+
+- what is the usual user error
+- what are edge cases
+- which correct texts might trigger the rule accidentally.
+
+### Example rule and tests
+
+An example is the following test for duplicate words (e.g. `The the fox jumped.`)
+
+```python
+rule = Rule(description="Duplicate words",
+            re_pattern=re.compile(r"[\s.,](\w+)[\s.,]+\1[\s,.]+", re.IGNORECASE),
+            where=ALL())
+
+TestRule(rule=rule, text=" .the THE ")
+TestRule(rule=rule, text=" ,the THE, ")
+TestRule(rule=rule, text=" the. THE ")
+TestRule(rule=rule, text=" the  THE ")
+TestRule(rule=rule, text=" the  THE,")
+TestRule(rule=rule, text=" however, however ")
+TestRule(rule=rule, text=" the. Then ", should_pass=True)
+```
+
+The rule looks for a space/punctuation, at least one letter (i.e. a word), at least one space/punctuation, then the same "word", then space
+
+Here you can see tests that cover:
+
+- at the start of sentences
+- split by punctuation
+- in the middle of sentences
+- more than one space between words
+- a scenario in which there is not a duplicate (but almost)
+
+and I'm still missing some scenarios!
 
 ## Running tests
 
@@ -41,5 +75,7 @@ Then, just do `pytest`, and it will automatically run all tests.
 ## References
 
 https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PubGuidelines
+
 https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionPrep
+
 https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionFormat
