@@ -14,13 +14,15 @@ rules, tests = [], []
 ##############################################################################
 rules.append(
     Rule(description="Duplicate words",
-         re_pattern=re.compile(r"[\s.](\w+)[\s.,]+\1\s+", re.IGNORECASE),
+         re_pattern=re.compile(r"[\s.,](\w+)[\s.,]+\1[\s.,]+", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
     TestRule(rule=rules[-1], text=" .the THE "),
+    TestRule(rule=rules[-1], text=" ,the THE, "),
     TestRule(rule=rules[-1], text=" the. THE "),
     TestRule(rule=rules[-1], text=" the  THE "),
+    TestRule(rule=rules[-1], text=" the  THE,"),
     TestRule(rule=rules[-1], text=" however, however "),
     TestRule(rule=rules[-1], text=" the. Then ", should_pass=True),
 ])
