@@ -380,3 +380,33 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"the ATLAS and CMS Collaborations", should_pass=True),
 ])
 
+rules.append(
+    Rule(description="Tevatron collaborations have lower case c",
+         re_pattern=re.compile(r"Tevatron\b\s+\bCollaborations"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the Tevatron Collaborations"),
+    TestRule(rule=rules[-1], text=r"the Tevatron collaborations", should_pass=True),
+])
+
+rules.append(
+    Rule(description="D0 Collaboration has capital c",
+         re_pattern=re.compile(r"D0\b\s+\bcollaboration"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the D0 collaboration"),
+    TestRule(rule=rules[-1], text=r"the D0 Collaboration", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Colloquial expression",
+         re_pattern=re.compile(r"\bget\b\s+\brid\b\s+\bof", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"we get rid of background"),
+    TestRule(rule=rules[-1], text=r"forget riding off", should_pass=True),
+])
+
