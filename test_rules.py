@@ -14,12 +14,12 @@ def test_a_rule(test):
     pattern = rule.re_pattern
     text = test.text.text_as_one_line
     should_pass = test.should_pass
-    expect_word = "OK" if should_pass else "not OK"
-    print("Testing", rule.description, "on:", text, "(expect:", expect_word, ")")
+    expect_word = "pass" if should_pass else "not pass"
+    print("Testing", rule.description, "on: '"+text+"' (expect:", expect_word, ")")
     match = pattern.search(text)
     found = match is not None
     if found == should_pass:
-        print("Failing test:", pattern, "on", text, "with result:", match)
+        print("Failing test:", pattern, "on: '"+text+"' with match:", match)
     assert(found != should_pass)
 
 
