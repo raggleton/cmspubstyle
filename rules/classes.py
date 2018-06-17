@@ -2,7 +2,7 @@
 
 
 import re
-from bisect import bisect_left
+from bisect import bisect_left, bisect_right
 from collections import namedtuple
 
 
@@ -34,9 +34,15 @@ class Text(object):
                     self.text_contents.append(this_line)
             # Creation from list of TextLine e.g. from output of another Text
             elif type(text[0]) == TextLine:
-                self.text_contents = text[:]
+                for line in text:
+                    # reset char_num_start
+                    char_num_start = sum([len(l.text.rstrip('\n')) for l in self.text_contents]) + 1
+                    this_line = TextLine(line_num=line.line_num, char_num_start=char_num_start, text=line.text)
+                    self.text_contents.append(this_line)
             else:
                 raise RuntimeError("Unknown type %s for text arg for Text class - should be list[str] or list[TextLine]" % type(text[0]))
+            
+            self.text_as_one_line = ""
             self.create_one_str_from_contents()
 
     def create_one_str_from_contents(self):
@@ -54,18 +60,10 @@ class Text(object):
 
     def find_lines_with_char_num_range(self, char_num_start, char_num_end):
         # Select relevant lines, based on which characters are involved
-        lines = []
-        found_start = False
-        for ind, x in enumerate(self.text_contents):
-            if found_start:
-                if x.char_num_start > char_num_end:
-                    break
-                lines.append(x)
-            elif (char_num_start >= x.char_num_start and
-                  self.text_contents[ind+1].char_num_start > char_num_start):
-                # TODO: use bisect?
-                lines.append(x)
-                found_start = True
+        char_num_starts = [x.char_num_start for x in self.text_contents]
+        start_ind = bisect_right(char_num_starts, char_num_start)-1
+        end_ind = bisect_left(char_num_starts, char_num_end)
+        lines = self.text_contents[start_ind : end_ind]
         return lines
 
     def iter_environment(self, environment):
@@ -90,7 +88,7 @@ class Text(object):
                     raise RuntimeError("Found end of environment but not beginning: %s" % line)
                 these_lines = self.text_contents[start_ind+1:end_ind]
                 start_ind, end_ind = None, None
-                yield these_lines
+                yield Text(these_lines)
 
     def iter_inline_delim(self, delim="$"):
         """Iterate over text inside matching delim, e.g. $...$
@@ -108,7 +106,7 @@ class Text(object):
             this_text = self.text_as_one_line[m1.start()+1:m2.start()]
             # FIXME: what should char_num_start be doing?
             new_line = TextLine(line_num=l.line_num, char_num_start=m1.start()+1, text=this_text)
-            yield new_line
+            yield Text([new_line])
 
     def iter_command(self, command):
         """Iterate over sections of text inside a \<command>{...}
@@ -141,7 +139,7 @@ class Text(object):
                         these_lines[-1] = TextLine(line_num=these_lines[-1].line_num,
                                                    char_num_start=s,
                                                    text=these_lines[-1].text[:offset_end])
-                        yield these_lines
+                        yield Text(these_lines)
                         break
                     else:
                         stack.pop()
@@ -152,26 +150,9 @@ class Text(object):
             # TODO what if >1 group?
             matching_text = m.groups()
 
-            lines = []
-
             # need the +1 on .start() as re uses 0-indexing, whilst .end() alread has +1
             start, end = m.start() + 1, m.end()
-            # print(start, end)
-
-            # Select relevant lines, based on which characters are involved
-            found_start = False
-            for ind, x in enumerate(self.text_contents):
-                if found_start:
-                    if x.char_num_start > m.end():
-                        break
-                    lines.append(x)
-                elif (start >= x.char_num_start and
-                      self.text_contents[ind+1].char_num_start > start):
-                    # Look for first line that contains one of our chars
-                    # TODO: use bisect?
-                    lines.append(x)
-                    found_start = True
-                    # TODO: do I want the whole line? or jsut the interesting bit
+            lines = self.find_lines_with_char_num_range(start, end)
             yield (m, lines)
 
 
@@ -232,6 +213,9 @@ class Rule(object):
         self.re_pattern = re_pattern
         self.where = where
 
+    def __repr__(self):
+        return "Rule("+str(self.re_pattern)+")"
+
 
 class TestRule(object):
     """Class to define a test for a Rule, and whether it should pass or not"""
@@ -243,6 +227,12 @@ class TestRule(object):
         else:
             self.text = Text(text)
         self.should_pass = should_pass
+
+    def __str__(self):
+        return "TestRule(rule=%s, text=%s, should_pass=%s)" % (self.rule, self.text.text_as_one_line, self.should_pass)
+
+    def __repr__(self):
+        return "TestRule(rule=%s, text=%s, should_pass=%s)" % (self.rule, self.text.text_as_one_line, self.should_pass)
 
     def test():
         result = True
