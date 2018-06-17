@@ -7,6 +7,8 @@ https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PubGuidelines
 https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionPrep
 https://twiki.cern.ch/twiki/bin/view/CMS/Internal/PaperSubmissionFormat
 
+Robin Aggleton 2018
+robin dot aggleton at cern dot ch
 """
 
 from __future__ import print_function
@@ -15,7 +17,7 @@ import re
 import sys
 import argparse
 from itertools import chain
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 from rules import normal_text
 from rules import latex
@@ -134,14 +136,15 @@ def check_and_report_errors(text):
     for broken_rule in check_text(text):
         report_error(broken_rule)
         problems.append(broken_rule)
+    return problems
 
 
 def print_filename_header(filename):
     """Print header for filename"""
-    separator = "-"*80
+    separator = "-"*60
     print(separator)
     print(bcolors.BLUE + filename + bcolors.ENDC)
-    print(separator)
+    # print(separator)
 
 
 def check_root_file(filename):
@@ -149,28 +152,67 @@ def check_root_file(filename):
     with open(filename) as f:
         root_text = Text(f.readlines())
 
+    problems_dict = OrderedDict()
+
     abstract_text = list(root_text.iter_command("abstract"))[0]
     print_filename_header(filename + " (ABSTRACT)")
     abstract_problems = check_and_report_errors(abstract_text)
+    problems_dict[filename + " [ABSTRACT]"] = abstract_problems
 
     # title_text_lines = Text(list(root_text.iter_command("title"))[0])
     # print_filename_header(filename + " (TITLE)")
     # title_problems = check_and_report_errors(title_text)
 
     # return abstract_results + title_results
+    return problems_dict
 
 
 def check_content_files(filenames):
     """Iterate through normal latex files and check each"""
+    problems_dict = OrderedDict()
     for filename in filenames:
         with open(filename) as f:
             text = Text(f.readlines())
         print_filename_header(filename)
-        check_and_report_errors(text)
+        these_problems = check_and_report_errors(text)
+        problems_dict[filename] = these_problems
+    return problems_dict
 
 
 def check_bib_files(filenames):
     return True
+
+
+def print_final_summary(problems_dict):
+    """Print summary for user: # errors per file, and # per error type"""
+    separator = "-"*80
+    print(separator)
+    print(bcolors.YELLOW + "SUMMARY (by file)" + bcolors.ENDC)
+    print(separator)
+    max_len = max([len(f) for f in problems_dict])
+    fname_fmt_str = "{0:<%d}: " % (max_len+1)
+    for fname, problems in problems_dict.items():
+        fname_str = fname_fmt_str.format(fname)
+        err_count_str = "%d" % (len(problems))
+        # jsut skip if 0 problems?
+        this_col = bcolors.RED if len(problems) > 0 else bcolors.GREEN
+        total_str = this_col + fname_str + err_count_str + bcolors.ENDC
+        print(total_str)
+    
+    print(separator)
+    print(bcolors.YELLOW + "SUMMARY (by issue)" + bcolors.ENDC)
+    print(separator)
+    issue_dict = defaultdict(int)
+    for problems in problems_dict.values():
+        for problem in problems:
+            issue_dict[problem.rule.description] += 1
+    # Sort by descending # of occurences
+    issue_dict = {k[0]:k[1] for k in sorted(issue_dict.items(), key=lambda x: x[1], reverse=True)}
+    max_len = max([len(k) for k in issue_dict])
+    desc_fmt_str = "{0:<%d}: " % (max_len+1)
+    for desc, ind in issue_dict.items():
+        print(desc_fmt_str.format(desc), ind)
+    print(separator)
 
 
 def main(in_args):
@@ -179,11 +221,14 @@ def main(in_args):
     check_args(args)
 
     files_dict = extract_input_files(args.input)
-    print("files_dict", files_dict)
+    # print("files_dict", files_dict)
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'])
     # content_results = check_content_files(files_dict['root'])
     bib_results = check_bib_files(files_dict['bib'])
+
+    root_results.update(content_results)
+    print_final_summary(root_results)
 
     return 0
 
