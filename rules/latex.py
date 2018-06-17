@@ -13,7 +13,8 @@ rules, tests = [], []
 
 rules.append(
     Rule(description="Roman subscript in maths",
-         re_pattern=re.compile(r"_\{?\w+\}?", re.IGNORECASE),
+        # ignore if \mathrm or \text in subscript, but pickup other things
+         re_pattern=re.compile(r"_\{?(?!\\mathrm)(?!\\text)[\w\\]+\}?", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -21,8 +22,11 @@ tests.extend([
     TestRule(rule=rules[-1], text="$p_{V}$"),
     TestRule(rule=rules[-1], text="$p_{J2}$"),
     TestRule(rule=rules[-1], text="$p_{rec}$"),
-    TestRule(rule=rules[-1], text="$p_{\mathrm{T}}$", should_pass=True),
-    TestRule(rule=rules[-1], text="$p_{\mathrm{rec}}$", should_pass=True),
+    TestRule(rule=rules[-1], text="$p_{VLQ}$"),
+    TestRule(rule=rules[-1], text=r"$p_{\Zp}$"),  # user macro
+    TestRule(rule=rules[-1], text=r"$p_{\mathrm{T}}$", should_pass=True),
+    TestRule(rule=rules[-1], text=r"$p_{\mathrm{T}}$", should_pass=True),
+    TestRule(rule=rules[-1], text=r"$p_{\mathrm{rec}}$", should_pass=True),
 ])
 
 rules.append(
