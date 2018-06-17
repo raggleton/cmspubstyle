@@ -82,7 +82,7 @@ def extract_input_files(tex_file):
     return files_dict
 
 
-def report_error(broken_rule, color=bcolors.RED):
+def report_error(broken_rule, color=bcolors.GREEN):
     """Print broken rule message on screen, highlight violating part & rule"""
     # print(broken_rule)
     
@@ -102,7 +102,7 @@ def report_error(broken_rule, color=bcolors.RED):
     error_str += lines[end_ind+1:]
     error_str = error_str.rstrip('\n')
     
-    print("    L"+line_num_str + ":", error_str, "  [", broken_rule.rule.description, "]")
+    print("  L"+line_num_str + ":", error_str, bcolors.PINK, "[", broken_rule.rule.description, "]", bcolors.ENDC)
 
 
 def check_text(text):
@@ -142,9 +142,9 @@ def check_and_report_errors(text):
 def print_filename_header(filename):
     """Print header for filename"""
     separator = "-"*60
-    print(separator)
-    print(bcolors.BLUE + filename + bcolors.ENDC)
     # print(separator)
+    print(bcolors.BLUE + filename + bcolors.ENDC)
+    print(separator)
 
 
 def check_root_file(filename):
@@ -212,6 +212,10 @@ def print_final_summary(problems_dict):
     desc_fmt_str = "{0:<%d}: " % (max_len+1)
     for desc, ind in issue_dict.items():
         print(desc_fmt_str.format(desc), ind)
+    print(separator)
+    total_num_issues = sum(issue_dict.values())
+    total_num_bad_files = len([p for p in problems_dict if len(problems_dict[p]) > 0])
+    print(bcolors.YELLOW + "TOTAL:", total_num_issues, "issues across", total_num_bad_files, "files", bcolors.ENDC)
     print(separator)
 
 
