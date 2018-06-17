@@ -93,14 +93,17 @@ def report_error(broken_rule, color=bcolors.GREEN):
     match = broken_rule.match
     
     start_ind = match.start() - broken_rule.lines[0].char_num_start + 1
-    end_ind = match.end() - broken_rule.lines[0].char_num_start
+    end_ind = match.end() - broken_rule.lines[0].char_num_start + 1
     
     lines = ''.join([l.text for l in broken_rule.lines])
     
-    error_str = lines[:start_ind].lstrip()
+    padding = 25
+    quote_start = max(start_ind-padding, 0)
+    quote_end = min(end_ind+padding, len(lines))
+    error_str = lines[quote_start:start_ind].lstrip()
     error_str += color + bcolors.UNDERLINE + bcolors.BOLD + match.group(0) + bcolors.ENDC
-    error_str += lines[end_ind+1:]
-    error_str = error_str.rstrip('\n')
+    error_str += lines[end_ind:quote_end]
+    error_str = error_str.rstrip()
     
     print("  L"+line_num_str + ":", error_str, bcolors.PINK, "[", broken_rule.rule.description, "]", bcolors.ENDC)
 
