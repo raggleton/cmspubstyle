@@ -87,3 +87,90 @@ tests.extend([
 #     TestRule(rule=rules[-1], text="Randall -- Sundrum", should_pass=True),
 #     TestRule(rule=rules[-1], text="Randall--Sundrum", should_pass=True),
 # ])
+
+##############################################################################
+# SYMBOLS
+##############################################################################
+
+rules.append(
+    Rule(description="Use anti-\\kt",
+         re_pattern=re.compile(r"anti\-(?!\\kt)\$?k"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"anti-k_{T}"),
+    TestRule(rule=rules[-1], text=r"anti-$k_{T}$"),
+    TestRule(rule=rules[-1], text=r"anti-\kt", should_pass=True),
+    TestRule(rule=rules[-1], text=r"anti-$\kt$", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\mathcal{B} for branching fraction",
+         re_pattern=re.compile(r"\bB\.?R\.?\b"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the Z BR"),
+    TestRule(rule=rules[-1], text=r"the Z B.R."),
+    TestRule(rule=rules[-1], text=r"times \mathcal{B}", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\ptmiss (without slash)",
+         re_pattern=re.compile(r"\\PT(slash|m)"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"\\PTslash"),
+    TestRule(rule=rules[-1], text=r"\\PTm"),
+    TestRule(rule=rules[-1], text=r"\\ptmiss", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\etmiss (without slash)",
+         re_pattern=re.compile(r"\\ETslash"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"\\ETslash"),
+    TestRule(rule=rules[-1], text=r"\\ETm", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\\etmiss", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do not use \\frac inline, use /",
+         # FIXME: make this INLINE
+         re_pattern=re.compile(r"\\frac"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"$ a_{b} \\frac{1}{2}$"),
+    TestRule(rule=rules[-1], text=r"1/2", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\fbinv for luminosity",
+         re_pattern=re.compile(r"1/fb"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"$36.5 1/fb$"),
+    TestRule(rule=rules[-1], text=r"36\\fbinv", should_pass=True),
+])
+
+common_func_names = ['sin', 'cos', 'tan', 'exp', 'log', 'ln']
+for func_name in common_func_names:
+    rules.append(
+        Rule(description="Use \\"+func_name,
+             re_pattern=re.compile(r"(?<!\\)"+func_name+r"[^\w]"),
+             where=ALL())
+             # where=[INLINE("$"), COMMAND("EQUATION")])
+    )
+    tests.extend([
+        TestRule(rule=rules[-1], text=r"$\\times "+func_name+r"(x)$"),
+        TestRule(rule=rules[-1], text=r"$ "+func_name+r" x$"),
+        TestRule(rule=rules[-1], text=r"$ "+func_name+r" \\left(x$"),
+        TestRule(rule=rules[-1], text=r"$ "+func_name+r"\\phi$"),
+        TestRule(rule=rules[-1], text=r"$a \cdot \\"+func_name+r"(x)$", should_pass=True),
+        TestRule(rule=rules[-1], text=r" u"+func_name+r"g ", should_pass=True),
+    ])

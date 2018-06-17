@@ -167,7 +167,7 @@ tests.extend([
 # COMMON GRAMMATICAL MISTAKES
 ##############################################################################
 rules.append(
-    Rule(description="Wrong indefinite article, requires an",
+    Rule(description="Wrong indefinite article, SM requires 'an'",
          re_pattern=re.compile(r"a SM", re.IGNORECASE),
          where=ALL())
 )
@@ -177,7 +177,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Wrong indefinite article, requires a",
+    Rule(description="Wrong indefinite article, SUSY requires 'a'",
          re_pattern=re.compile(r"\ban SUSY", re.IGNORECASE),
          where=ALL())
 )
@@ -187,8 +187,8 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="'Due to' or 'Because of'?",
-         re_pattern=re.compile(r"\bdue to", re.IGNORECASE),
+    Rule(description="'due to' or 'because of'?",
+         re_pattern=re.compile(r"\bdue\b\s+\bto", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -197,7 +197,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="'Evidence' takes no plural",
+    Rule(description="'evidence' takes no plural",
          re_pattern=re.compile(r"\bevidences", re.IGNORECASE),
          where=ALL())
 )
@@ -232,4 +232,151 @@ tests.extend([
 ##############################################################################
 # ACRONYMS
 ##############################################################################
+
+rules.append(
+    Rule(description="Do not capitalise first letters",
+         re_pattern=re.compile(r"Standard\b\s+\bModel"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="Standard Model"),
+    TestRule(rule=rules[-1], text="standard model", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do not capitalise first letters",
+         re_pattern=re.compile(r"Quantum\b\s+\bChromodynamics"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="Quantum Chromodynamics"),
+    TestRule(rule=rules[-1], text="quantum chromodynamics", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do capitalise first letters",
+         re_pattern=re.compile(r"monte\b\s+\bcarlo"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="monte carlo"),
+    TestRule(rule=rules[-1], text="Monte Carlo", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do not use d.o.f for degrees of freedom (use dof or n_d)",
+         re_pattern=re.compile(r"d\.o\.f"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="d.o.f"),
+    TestRule(rule=rules[-1], text="dof", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do not use d.o.f for degrees of freedom (use dof or n_d)",
+         re_pattern=re.compile(r"d\.o\.f"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="d.o.f"),
+    TestRule(rule=rules[-1], text="dof", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Do not start sentence with an acronym",
+         re_pattern=re.compile(r"\.\s+\b[A-Z]{2,}\b"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r". VLQ"),
+    TestRule(rule=rules[-1], text=".   VLQ"),
+    TestRule(rule=rules[-1], text=r"a QLZ", should_pass=True),
+])
+
+##############################################################################
+# SYMBOLS
+##############################################################################
+
+rules.append(
+    Rule(description="Do not start sentence with a symbol",
+         re_pattern=re.compile(r"\.\s+[\$\\](?!section)(?!ref)(?!subsection)(?!item)(?!begin)(?!end)"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r". \Zp"),
+    TestRule(rule=rules[-1], text=".   $N_d$"),
+    TestRule(rule=rules[-1], text=r"a \QLZ", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use 'transverse momentum', not 'transverse energy'",
+         re_pattern=re.compile(r"transverse\b\s+\benergy", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"transverse  energy"),
+    TestRule(rule=rules[-1], text=r"transverse  momentum", should_pass=True),
+])
+
+##############################################################################
+# WORD USE AND JARGON
+##############################################################################
+
+rules.append(
+    Rule(description="Avoid 'actual', prefer 'current'/'existing'",
+         re_pattern=re.compile(r"\bactual\b", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the actual setup"),
+    TestRule(rule=rules[-1], text=r"factual", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use 'X antiquark', not 'antiX quark'",
+         re_pattern=re.compile(r"\banti-?[\w]+\b\s+quark", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the antitop quark "),
+    TestRule(rule=rules[-1], text=r"the antibottom quark "),
+    TestRule(rule=rules[-1], text=r"the antitop quark's "),
+    TestRule(rule=rules[-1], text=r"the anti-top quark "),
+    TestRule(rule=rules[-1], text=r"the top antiquark", should_pass=True),
+])
+
+rules.append(
+    Rule(description="jargon: beamspot",
+         re_pattern=re.compile(r"\bbeamspot'?s?\b", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the beamspot is"),
+    TestRule(rule=rules[-1], text=r"the beamspot's is"),
+    TestRule(rule=rules[-1], text=r"the beamspots is"),
+])
+
+rules.append(
+    Rule(description="Use 'charged particle track' instead of 'charged track'",
+         re_pattern=re.compile(r"\bcharged\b\s+\btrack\b", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the charged track is"),
+    TestRule(rule=rules[-1], text=r"the charged   track."),
+    TestRule(rule=rules[-1], text=r"the charged tracking", should_pass=True), # why?
+])
+
+rules.append(
+    Rule(description="ATLAS & CMS Collaboration(s) have capital C",
+         re_pattern=re.compile(r"(ATLAS|CMS)\b\s+\bcollaboration"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the CMS collaboration"),
+    TestRule(rule=rules[-1], text=r"the ATLAS  collaboration."),
+    TestRule(rule=rules[-1], text=r"the ATLAS & CMS collaborations."),
+    TestRule(rule=rules[-1], text=r"the ATLAS and CMS Collaborations", should_pass=True),
+])
 
