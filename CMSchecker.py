@@ -142,7 +142,7 @@ def check_and_report_errors(text):
 def print_filename_header(filename):
     """Print header for filename"""
     separator = "-"*60
-    # print(separator)
+    print(separator)
     print(bcolors.BLUE + filename + bcolors.ENDC)
     print(separator)
 
@@ -159,11 +159,11 @@ def check_root_file(filename):
     abstract_problems = check_and_report_errors(abstract_text)
     problems_dict[filename + " [ABSTRACT]"] = abstract_problems
 
-    # title_text_lines = Text(list(root_text.iter_command("title"))[0])
-    # print_filename_header(filename + " (TITLE)")
-    # title_problems = check_and_report_errors(title_text)
+    title_text = list(root_text.iter_command("title"))[0]
+    print_filename_header(filename + " (TITLE)")
+    title_problems = check_and_report_errors(title_text)
+    problems_dict[filename + " [TITLE]"] = title_problems
 
-    # return abstract_results + title_results
     return problems_dict
 
 
