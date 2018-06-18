@@ -465,13 +465,14 @@ slang_words = [
 for slang_word, better_word in slang_words:
     rules.append(
         Rule(description="Avoid '"+slang_word+"', prefer e.g. '"+better_word+"'",
-             re_pattern=re.compile(r"\b"+slang_word+r"\b", re.IGNORECASE),
+             re_pattern=re.compile(r"(?<!:)\b"+slang_word+r"\b(?!})", re.IGNORECASE),
              where=ALL())
     )
     tests.extend([
         TestRule(rule=rules[-1], text=r"the "+slang_word+" rate"),
-        TestRule(rule=rules[-1], text=r" ."+slang_word+"    ele", should_pass=False),
+        TestRule(rule=rules[-1], text=r" ."+slang_word+"    ele"),
         TestRule(rule=rules[-1], text=r"the f"+slang_word+"ery is", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\\ref{sec:"+slang_word+"}", should_pass=True),
     ])
 
 double_slang_words = [
