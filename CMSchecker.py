@@ -45,6 +45,9 @@ def create_arg_parser():
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("input",
                         help="Main paper/PAS/AN tex file. Will also check every file included with \\input.")
+    parser.add_argument("--doComments",
+                        action='store_true',
+                        help="Include comment lines in checks")
     return parser
 
 
@@ -108,7 +111,7 @@ def report_error(broken_rule, color=bcolors.GREEN):
     print("  L"+line_num_str + ":", error_str, bcolors.PINK, "[", broken_rule.rule.description, "]", bcolors.ENDC)
 
 
-def check_text(text):
+def check_text(text, do_comments):
     """Method to check any piece of main text (not bib)"""
     # locations = list(set([rule.where for rule in chain(normal_text.rules, latex.rules)]))
     # for l in locations:
@@ -123,6 +126,9 @@ def check_text(text):
             # print(rule.re_pattern)
 
             for match, lines in text.find_iter(rule.re_pattern):
+                # FIXME better test to check if comment line(s)?
+                if lines[0].text.strip().startswith("%") and not do_comments:
+                    continue
                 yield RuleBroken(rule=rule, match=match, lines=lines)
     
         # elif isinstance(rule.where, COMMAND):
@@ -136,7 +142,7 @@ def check_text(text):
 def check_and_report_errors(text):
     """Check text for all errors, and print them out"""
     problems = []
-    for broken_rule in check_text(text):
+    for broken_rule in check_text(text, do_comments):
         report_error(broken_rule)
         problems.append(broken_rule)
     return problems
@@ -159,25 +165,25 @@ def check_root_file(filename):
 
     abstract_text = list(root_text.iter_command("abstract"))[0]
     print_filename_header(filename + " (ABSTRACT)")
-    abstract_problems = check_and_report_errors(abstract_text)
+    abstract_problems = check_and_report_errors(abstract_text, do_comments=False)
     problems_dict[filename + " [ABSTRACT]"] = abstract_problems
 
     title_text = list(root_text.iter_command("title"))[0]
     print_filename_header(filename + " (TITLE)")
-    title_problems = check_and_report_errors(title_text)
+    title_problems = check_and_report_errors(title_text, do_comments=False)
     problems_dict[filename + " [TITLE]"] = title_problems
 
     return problems_dict
 
 
-def check_content_files(filenames):
+def check_content_files(filenames, do_comments=False):
     """Iterate through normal latex files and check each"""
     problems_dict = OrderedDict()
     for filename in filenames:
         with open(filename) as f:
             text = Text(f.readlines())
         print_filename_header(filename)
-        these_problems = check_and_report_errors(text)
+        these_problems = check_and_report_errors(text, do_comments)
         problems_dict[filename] = these_problems
     return problems_dict
 
@@ -230,7 +236,7 @@ def main(in_args):
     files_dict = extract_input_files(args.input)
     # print("files_dict", files_dict)
     root_results = check_root_file(files_dict['root'])
-    content_results = check_content_files(files_dict['contents'])
+    content_results = check_content_files(files_dict['contents'], args.doComments)
     # content_results = check_content_files(files_dict['root'])
     bib_results = check_bib_files(files_dict['bib'])
 
