@@ -216,3 +216,23 @@ for func_name in common_func_names:
         TestRule(rule=rules[-1], text=r"$a \cdot \\"+func_name+r"(x)$", should_pass=True),
         TestRule(rule=rules[-1], text=r" u"+func_name+r"g ", should_pass=True),
     ])
+
+rules.append(
+    Rule(description="Use \\begin{equation}...\\end{equation} over $$...$$",
+         re_pattern=re.compile(r"\$\$.*?\$\$"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"$$ a_{b} \\cdot d $$"),
+    TestRule(rule=rules[-1], text=r"$a b_{C}$", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Prefer \\to over \\rightarrow",
+         re_pattern=re.compile(r"\\rightarrow"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"a \rightarrow b"),
+    TestRule(rule=rules[-1], text=r"a \to b$", should_pass=True),
+])
