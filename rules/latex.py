@@ -138,6 +138,48 @@ tests.extend([
 ])
 
 rules.append(
+    Rule(description="Use \\MeV instead of MeV",
+         re_pattern=re.compile(r"(?<!\\)MeV"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"22 MeV$"),
+    TestRule(rule=rules[-1], text=r"22 MeVc$"),
+    TestRule(rule=rules[-1], text=r"22 MeVcc$"),
+    TestRule(rule=rules[-1], text=r"36\\MeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\MeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\MeVcc", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\GeV instead of GeV",
+         re_pattern=re.compile(r"(?<!\\)GeV"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"22 GeV$"),
+    TestRule(rule=rules[-1], text=r"22 GeVc$"),
+    TestRule(rule=rules[-1], text=r"22 GeVcc$"),
+    TestRule(rule=rules[-1], text=r"36\\GeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\GeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\GeVcc", should_pass=True),
+])
+
+rules.append(
+    Rule(description="Use \\TeV instead of TeV",
+         re_pattern=re.compile(r"(?<!\\)TeV"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"22 TeV$"),
+    TestRule(rule=rules[-1], text=r"22 TeVc$"),
+    TestRule(rule=rules[-1], text=r"22 TeVcc$"),
+    TestRule(rule=rules[-1], text=r"36\\TeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\TeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\\TeVcc", should_pass=True),
+])
+
+rules.append(
     Rule(description="Do not use \\frac inline, use /",
          # FIXME: make this INLINE
          re_pattern=re.compile(r"\\frac"),
