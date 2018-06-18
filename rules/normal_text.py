@@ -347,17 +347,6 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="jargon: beamspot",
-         re_pattern=re.compile(r"\bbeamspot'?s?\b", re.IGNORECASE),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text=r"the beamspot is"),
-    TestRule(rule=rules[-1], text=r"the beamspot's is"),
-    TestRule(rule=rules[-1], text=r"the beamspots is"),
-])
-
-rules.append(
     Rule(description="Use 'charged particle track' instead of 'charged track'",
          re_pattern=re.compile(r"\bcharged\b\s+\btrack\b", re.IGNORECASE),
          where=ALL())
@@ -377,12 +366,13 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"the CMS collaboration"),
     TestRule(rule=rules[-1], text=r"the ATLAS  collaboration."),
     TestRule(rule=rules[-1], text=r"the ATLAS & CMS collaborations."),
+    TestRule(rule=rules[-1], text=r"then .ATLAS & CMS collaborations."),
     TestRule(rule=rules[-1], text=r"the ATLAS and CMS Collaborations", should_pass=True),
 ])
 
 rules.append(
     Rule(description="Tevatron collaborations have lower case c",
-         re_pattern=re.compile(r"Tevatron\b\s+\bCollaborations"),
+         re_pattern=re.compile(r"\bTevatron\b\s+\bCollaborations"),
          where=ALL())
 )
 tests.extend([
@@ -392,7 +382,7 @@ tests.extend([
 
 rules.append(
     Rule(description="D0 Collaboration has capital c",
-         re_pattern=re.compile(r"D0\b\s+\bcollaboration"),
+         re_pattern=re.compile(r"\bD0\b\s+\bcollaboration"),
          where=ALL())
 )
 tests.extend([
@@ -408,5 +398,114 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text=r"we get rid of background"),
     TestRule(rule=rules[-1], text=r"forget riding off", should_pass=True),
+])
+
+rules.append(
+    Rule(description="'data' is plural",
+         re_pattern=re.compile(r"\bdata\b\s+\bis", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the data is good"),
+    TestRule(rule=rules[-1], text=r"the data isn't good"),
+    TestRule(rule=rules[-1], text=r" .Data    is"),
+    TestRule(rule=rules[-1], text=r"the data are", should_pass=True),
+])
+
+rules.append(
+    Rule(description="'data set' not 'dataset'",
+         re_pattern=re.compile(r"\bdataset\b", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the dataset is good"),
+    TestRule(rule=rules[-1], text=r" .Data    set", should_pass=True),
+    TestRule(rule=rules[-1], text=r"the data set", should_pass=True),
+])
+
+should_be_followed = [
+    ('Higgs', 'boson'),
+    ('top', 'quark'),
+    ('bottom', 'quark'),
+    ('charm', 'quark'),
+    ('strange', 'quark'),
+    # ('up', 'quark'),   # these are hard, as many common cases, e.g. up to
+    # ('down', 'quark'),
+]
+for first, second in should_be_followed:
+    rules.append(
+        Rule(description="'"+first+"' should be followed by '"+second+"'",
+             re_pattern=re.compile(r"\b"+first+r"\b\s*(?!"+second+r")[\w.']+", re.IGNORECASE),
+             where=ALL())
+    )
+    tests.extend([
+        TestRule(rule=rules[-1], text=r"the "+first+" mass"),
+        TestRule(rule=rules[-1], text=r"the "+first+"."),
+        TestRule(rule=rules[-1], text=first+r" production"),
+        TestRule(rule=rules[-1], text=first+r" cross-section"),
+        TestRule(rule=rules[-1], text=r"the "+first+" "+second+" mass", should_pass=True),
+    ])
+
+slang_words = [
+    ('beamspot', 'luminous region/interaction point'),
+    ('cut', 'criteria/requirement'),
+    # ('dataset', 'data set'),
+    # ('pileup', ''),
+    ('fake', 'misidentified'),
+    ('kinematics', 'kinematical variables'),
+    ('statistics', 'more data/statistical precision'),
+    ('systematics', 'systematic uncertainty/precision'),
+    ('stop', 'top squark'),
+    ('sbottom', 'bottom squark'),
+    ('scharm', 'charm squark'),
+    ('sstrange', 'strange squark'),
+    ('sup', 'up squark'),
+    ('sdown', 'down squark'),
+]
+for slang_word, better_word in slang_words:
+    rules.append(
+        Rule(description="Avoid '"+slang_word+"', prefer e.g. '"+better_word+"'",
+             re_pattern=re.compile(r"\b"+slang_word+r"\b", re.IGNORECASE),
+             where=ALL())
+    )
+    tests.extend([
+        TestRule(rule=rules[-1], text=r"the "+slang_word+" rate"),
+        TestRule(rule=rules[-1], text=r" ."+slang_word+"    ele", should_pass=False),
+        TestRule(rule=rules[-1], text=r"the f"+slang_word+"ery is", should_pass=True),
+    ])
+
+double_slang_words = [
+    ("coupling constant", "coupling strength"),
+    ("Higgs tagging", "Higgs boson tagging/H tagging"),
+    ("top tagging", "top quark tagging/t tagging"),
+    ("uncertainty on", "uncertainty in"),
+]
+for slang_word, better_word in double_slang_words:
+    parts = slang_word.split()
+    rules.append(
+        Rule(description="Avoid '"+slang_word+"', instead '"+better_word+"'",
+             re_pattern=re.compile(r"\b"+parts[0]+r"\b\s+\b"+parts[1], re.IGNORECASE),
+             where=ALL())
+    )
+    tests.extend([
+        TestRule(rule=rules[-1], text=r"the "+slang_word+" was"),
+        TestRule(rule=rules[-1], text=r"the "+slang_word.replace(" ", "    ")+"."),
+        TestRule(rule=rules[-1], text=r"the "+slang_word+"."),
+        TestRule(rule=rules[-1], text=r"."+slang_word+" was"),
+        TestRule(rule=rules[-1], text=r"the "+better_word+" was", should_pass=True),
+    ])
+
+rules.append(
+    Rule(description="Avoid 'error', instead 'uncertianty'",
+         re_pattern=re.compile(r"\berror[s]?\b[\s\.]*?\b(?!bar)[\w.']+", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"the error was"),
+    TestRule(rule=rules[-1], text=r"the errors were"),
+    TestRule(rule=rules[-1], text=r"the error."),
+    TestRule(rule=rules[-1], text=r".Error was"),
+    TestRule(rule=rules[-1], text=r"-error time"),
+    TestRule(rule=rules[-1], text=r"the error bars", should_pass=True),
 ])
 
