@@ -100,53 +100,63 @@ tests.extend([
 # HYPHENATION
 ##############################################################################
 # UNHYPHENATED, 2 WORDS
-rules.append(
-    Rule(description="Unnecessary hyphenation",
-         re_pattern=re.compile(r"\w-jet"),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text="b-jet"),
-    TestRule(rule=rules[-1], text=r"\cPQb-jet"),
-    TestRule(rule=rules[-1], text=r"b jet", should_pass=True),
-    TestRule(rule=rules[-1], text=r"\cPQb jet", should_pass=True),
-])
+unhyphenated = [
+    "b|jet",
+    "b|quark",
+    "b|tag",
+    "b|tagging",
+    "beam|halo",
+    "black|hole",
+    "g|jet",
+    "g|quark",
+    "g|tag",
+    "g|tagging",
+    "c|jet",
+    "c|quark",
+    "c|tag",
+    "c|tagging",
+    "s|jet",
+    "s|quark",
+    "s|tag",
+    "s|tagging",
+    "d|jet",
+    "d|quark",
+    "u|jet",
+    "u|quark",
+    "charged|particle",
+    "colour|singlet",
+    "cross|section",
+    "heavy|ion",
+    "Higgs|boson",
+    "invariant|mass",
+    "jet|energy",
+    "jet|energy",
+    # "$K$|factor",
+    "lead|tungstate",
+    "Monte|Carlo",
+    "single|top",
+    "standard|model",
+    "tau|lepton",
+    "top|quark",
+    "W|boson",
+    "Z|boson",
+]
 
-rules.append(
-    Rule(description="Unnecessary hyphenation",
-         re_pattern=re.compile(r"\w-quark"),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text="b-quark"),
-    TestRule(rule=rules[-1], text=r"\cPQb-quark"),
-    TestRule(rule=rules[-1], text=r"b quark", should_pass=True),
-    TestRule(rule=rules[-1], text=r"\cPQb quark", should_pass=True),
-])
-
-rules.append(
-    Rule(description="Unnecessary hyphenation",
-         re_pattern=re.compile(r"\w-tag(?!ged)"),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text="b-tag"),
-    TestRule(rule=rules[-1], text=r"b tag", should_pass=True),
-    TestRule(rule=rules[-1], text=r"{\PW} tag", should_pass=True),
-    TestRule(rule=rules[-1], text=r"b-tagged", should_pass=True),
-    TestRule(rule=rules[-1], text=r"b-tagged", should_pass=True),
-])
-
-rules.append(
-    Rule(description="Unnecessary hyphenation",
-         re_pattern=re.compile(r"\w-tagging"),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text="b-tagging"),
-    TestRule(rule=rules[-1], text=r"b tagging", should_pass=True),
-    TestRule(rule=rules[-1], text=r"{\PW} tagging", should_pass=True),
-])
+for word in unhyphenated:
+    pre, post = word.split("|")
+    rules.append(
+        Rule(description="Unnecessary hyphenation",
+             re_pattern=re.compile(pre+"-"+post, re.IGNORECASE),
+             where=ALL())
+    )
+    tests.extend([
+        TestRule(rule=rules[-1], text=pre+"-"+post),
+        # TestRule(rule=rules[-1], text=r"\cPQ"+pre+"-"+post),
+        TestRule(rule=rules[-1], text=pre+" "+post, should_pass=True),
+        TestRule(rule=rules[-1], text=pre+"  "+post, should_pass=True),
+        TestRule(rule=rules[-1], text="blahblah "+post, should_pass=True),
+        # TestRule(rule=rules[-1], text=r"\cPQ"+pre+" "+post, should_pass=True),
+    ])
 
 # UNHYPHENATED SINGLE WORDS
 
