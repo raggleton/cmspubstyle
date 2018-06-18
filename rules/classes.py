@@ -101,8 +101,8 @@ class Text(object):
             # Assumes all contents on one TextLine!
             l = self.find_line_with_char_num(m1.start()+1)
             l2 = self.find_line_with_char_num(m2.end())
-            if l2.line_num != l.line_num:
-                raise RuntimeError("Your inline maths spans 2 lines - I don't knwo how to handle that")
+            # if l2.line_num != l.line_num:
+            #     raise RuntimeError("Your inline maths spans 2 lines - I don't knwo how to handle that")
             this_text = self.text_as_one_line[m1.start()+1:m2.start()]
             # FIXME: what should char_num_start be doing?
             new_line = TextLine(line_num=l.line_num, char_num_start=m1.start()+1, text=this_text)
