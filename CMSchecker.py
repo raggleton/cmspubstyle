@@ -21,7 +21,7 @@ from collections import OrderedDict, defaultdict
 
 from rules import normal_text
 from rules import latex
-from rules.classes import ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
+from rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
 
 
 class bcolors:
@@ -121,24 +121,41 @@ def check_text(text, do_comments):
     # print(text.text_as_one_line)
 
     for rule in chain(normal_text.rules, latex.rules):
-        if isinstance(rule.where, ALL):
-            # print(rule.re_pattern)
+        where = rule.where
+        if isinstance(where, Location):
+            where = [rule.where]
 
-            for match, lines in text.find_iter(rule.re_pattern):
-                # FIXME better test to check if comment line(s)?
-                if lines[0].text.strip().startswith("%") and not do_comments:
-                    continue
-                yield RuleBroken(rule=rule, match=match, lines=lines)
-    
-        # elif isinstance(rule.where, COMMAND):
-        #     print('doing', rule.where)
-        #     for this_cmd_text in text.iter_command(rule.where.opt):
-        #         print(this_cmd_text)
-        #         for match, lines in this_cmd_text.iter_command(rule.re_pattern):
-        #             yield RuleBroken(rule=rule, match=match, lines=lines)
+        for location in where:
+            if isinstance(location, ALL):
+                for match, lines in text.find_iter(rule.re_pattern):
+                    # FIXME is this the best check? maybe check if any line?
+                    if lines[0].text.strip().startswith("%") and not do_comments:
+                        continue
+                    yield RuleBroken(rule=rule, match=match, lines=lines)
+
+            elif isinstance(location, COMMAND):
+                print('doing', location)
+                for this_cmd_text in text.iter_command(location.opt):
+                    print(this_cmd_text)
+                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+                        yield RuleBroken(rule=rule, match=match, lines=lines)
+
+            elif isinstance(location, INLINE):
+                print('doing', location)
+                for this_cmd_text in text.iter_inline_delim(location.opt):
+                    print(this_cmd_text)
+                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+                        yield RuleBroken(rule=rule, match=match, lines=lines)
+
+            elif isinstance(location, ENVIRONMENT):
+                print('doing', location)
+                for this_cmd_text in text.iter_environment(location.opt):
+                    print(this_cmd_text)
+                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+                        yield RuleBroken(rule=rule, match=match, lines=lines)
 
 
-def check_and_report_errors(text):
+def check_and_report_errors(text, do_comments):
     """Check text for all errors, and print them out"""
     problems = []
     for broken_rule in check_text(text, do_comments):
