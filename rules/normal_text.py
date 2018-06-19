@@ -101,7 +101,7 @@ tests.extend([
 ##############################################################################
 # UNHYPHENATED, 2 WORDS
 unhyphenated = [
-    "b|jet",
+    "b|jet", # should hopefully catch \cPqb as well
     "b|quark",
     "b|tag",
     "b|tagging",

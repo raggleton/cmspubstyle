@@ -67,7 +67,7 @@ class Text(object):
         return lines
 
     def iter_environment(self, environment):
-        """Return contents of environments, i.e. \begin{<environment>}...\end{<environment>}
+        r"""Return contents of environments, i.e. \begin{<environment>}...\end{<environment>}
 
         Returns list of TextLine for each occurence of \begin{<environment>}...\end{<environment>}
         """

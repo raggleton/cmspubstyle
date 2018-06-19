@@ -176,7 +176,7 @@ def check_root_file(filename):
 
 
 def check_content_files(filenames, do_comments=False):
-    """Iterate through normal latex files and check each"""
+    """Iterate through normal latex files and check each, printing out errors"""
     problems_dict = OrderedDict()
     for filename in filenames:
         with open(filename) as f:
@@ -233,10 +233,8 @@ def main(in_args):
     check_args(args)
 
     files_dict = extract_input_files(args.input)
-    # print("files_dict", files_dict)
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'], args.doComments)
-    # content_results = check_content_files(files_dict['root'])
     bib_results = check_bib_files(files_dict['bib'])
 
     root_results.update(content_results)
