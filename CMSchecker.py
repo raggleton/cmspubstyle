@@ -85,7 +85,7 @@ def extract_input_files(tex_file):
     return files_dict
 
 
-def report_error(broken_rule, color=bcolors.GREEN):
+def report_error(broken_rule, color=bcolors.GREEN, padding=25):
     """Print broken rule message on screen, highlight violating part & rule"""
     # print(broken_rule)
     
@@ -100,7 +100,6 @@ def report_error(broken_rule, color=bcolors.GREEN):
     
     lines = ''.join([l.text for l in broken_rule.lines])
     
-    padding = 25
     quote_start = max(start_ind-padding, 0)
     quote_end = min(end_ind+padding, len(lines))
     error_str = lines[quote_start:start_ind].lstrip()
