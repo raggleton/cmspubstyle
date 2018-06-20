@@ -49,6 +49,7 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text="Some cool physics at ATLAS."),
     TestRule(rule=rules[-1], text="Other physics at LHC. My cool result.", should_pass=True),
+    TestRule(rule=rules[-1], text="Other physics at LHC accelerator. My cool result.", should_pass=True),
 ])
 
 rules.append(
@@ -59,6 +60,7 @@ rules.append(
 tests.extend([
     TestRule(rule=rules[-1], text="Some cool physics at ATLAS."),
     TestRule(rule=rules[-1], text="Other physics at CMS. My cool result.", should_pass=True),
+    TestRule(rule=rules[-1], text="Other physics at CMS experiment. My cool result.", should_pass=True),
 ])
 
 rules.append(
@@ -508,7 +510,7 @@ for slang_word, better_word in double_slang_words:
 
 rules.append(
     Rule(description="Avoid 'error', instead 'uncertianty'",
-         re_pattern=re.compile(r"\berror[s]?\b[\s\.]*?\b(?!bar)[\w.']+", re.IGNORECASE),
+         re_pattern=re.compile(r"\berror[s]?\b[\s\.]*?\b(?!bar)(?!band)[\w.']+", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -612,19 +614,32 @@ for short_word, full_word in always_full_word:
 
     rules.append(
         Rule(description="Always capitalise '"+full_word+"'",
-             re_pattern=re.compile(r"(?<!cross )(?<!{)(?<!\\)(?<!\\sub)"+full_word.lower()),
+             re_pattern=re.compile(r"(?<!{)(?<!\\)(?<!\\sub)\s*?"+full_word.lower()),
              where=ALL())
     )
     tests.extend([
         TestRule(rule=rules[-1], text=full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
-        TestRule(rule=rules[-1], text=" the cross "+full_word.lower()+r"~\ref{", should_pass=True),
+        # TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
         TestRule(rule=rules[-1], text=r"\\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"\\sub"+full_word.lower()+r"{ ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
     ])
+
+    if full_word == "Section":
+        rules.append(
+            Rule(description="Always capitalise '"+full_word+"'",
+                 re_pattern=re.compile(r"^(?!.*cross).*"+full_word.lower()),
+                 where=ALL())
+        )
+        tests.extend([
+            TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
+            TestRule(rule=rules[-1], text=" the "+full_word.lower()),
+            TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
+            TestRule(rule=rules[-1], text=" the cross  "+full_word.lower(), should_pass=True),
+        ])
 
 use_abbreviation = [
 ('Fig.', 'Figure'),
@@ -634,7 +649,7 @@ use_abbreviation = [
 for short_word, full_word in use_abbreviation:
     rules.append(
         Rule(description="Abbreviate '"+full_word+"' to '"+short_word+"' in sentence.",
-             re_pattern=re.compile(r"(?<!\.)\s+"+full_word),
+             re_pattern=re.compile(r"(?<!\{figure\})(?<!\.)\s+"+full_word),
              where=ALL())
     )
     tests.extend([
@@ -660,7 +675,7 @@ for short_word, full_word in use_abbreviation:
 
     rules.append(
         Rule(description="Always capitalise '"+full_word+"'",
-             re_pattern=re.compile(r"(?<!cross )(?<!{)(?<!\\)"+full_word.lower()),
+             re_pattern=re.compile(r"(?<!{)(?<!\\)"+full_word.lower()),
              where=ALL())
     )
     tests.extend([
@@ -669,7 +684,6 @@ for short_word, full_word in use_abbreviation:
         TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
         TestRule(rule=rules[-1], text=r". "+full_word.lower()),
         TestRule(rule=rules[-1], text=r"."+full_word.lower()),
-        TestRule(rule=rules[-1], text=" the cross "+full_word.lower()+r"~\ref{", should_pass=True),
         TestRule(rule=rules[-1], text=r"\\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
@@ -678,7 +692,7 @@ for short_word, full_word in use_abbreviation:
     
     rules.append(
         Rule(description="Always capitalise '"+short_word+"'",
-             re_pattern=re.compile(r"(?<!cross )(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")),
+             re_pattern=re.compile(r"(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")),
              where=ALL())
     )
     tests.extend([
@@ -687,7 +701,6 @@ for short_word, full_word in use_abbreviation:
         TestRule(rule=rules[-1], text=r"the "+short_word.lower()),
         TestRule(rule=rules[-1], text=r"."+short_word.lower()),
         TestRule(rule=rules[-1], text=r". "+short_word.lower()),
-        TestRule(rule=rules[-1], text=" the cross "+short_word.lower()+r"~\ref{", should_pass=True),
         TestRule(rule=rules[-1], text=r"\\begin{"+short_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+short_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+short_word+" shows", should_pass=True),

@@ -3,11 +3,7 @@
 Check your PAS/PAPER/AN against the CMS PubComm guildelines.
 Aims to make language review less embarassing, since no one can remember several TWikis worth of somewhat arbitrary rules.
 
-I bear no responsiblity if this code misses errors - I was once told:
-
-> Have you really read the guidelines? Are there things in the guidelines we could make clearer?...
-> Even if I think you have the needed skills...
-> You are seemingly lacking the needed concentration...
+I bear no responsiblity if this code misses errors
 
 
 ## Install
