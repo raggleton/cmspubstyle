@@ -24,6 +24,8 @@ from rules import latex
 from rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
 
 
+ALL_RULES = normal_text.rules + latex.rules
+
 class bcolors:
     PINK = '\033[95m'
     BLUE = '\033[94m'
@@ -120,7 +122,7 @@ def check_text(text, do_comments):
         # print(x)
     # print(text.text_as_one_line)
 
-    for rule in chain(normal_text.rules, latex.rules):
+    for rule in ALL_RULES:
         where = rule.where
         if isinstance(where, Location):
             where = [rule.where]
@@ -248,6 +250,8 @@ def main(in_args):
     parser = create_arg_parser()
     args = parser.parse_args(in_args)
     check_args(args)
+
+    print("Checking against", len(ALL_RULES), "rules")
 
     files_dict = extract_input_files(args.input)
     root_results = check_root_file(files_dict['root'])
