@@ -15,6 +15,7 @@ from __future__ import print_function
 import os
 import re
 import sys
+import json
 import argparse
 from itertools import chain
 from collections import OrderedDict, defaultdict
@@ -212,24 +213,40 @@ def check_bib_files(filenames):
     return True
 
 
-def print_final_summary(problems_dict):
+def print_final_summary(problems_dict, cached_results=None):
     """Print summary for user: # errors per file, and # per error type"""
     separator = "-"*80
     print(separator)
-    print(bcolors.YELLOW + "SUMMARY (by file)" + bcolors.ENDC)
+    print(bcolors.YELLOW + bcolors.BOLD + "SUMMARY (by file)" + bcolors.ENDC)
     print(separator)
     max_len = max([len(f) for f in problems_dict])
-    fname_fmt_str = "{0:<%d}: " % (max_len+1)
+    max_problems = max([len(p) for p in problems_dict.values()])
+    max_problems_str = "%d" % max_problems
     for fname, problems in problems_dict.items():
-        fname_str = fname_fmt_str.format(fname)
-        err_count_str = "%d" % (len(problems))
+        num_problems = len(problems)
+        num_problems_str = str(num_problems)
+        num_dots = max_len + 3 - len(fname) + len(max_problems_str) - len(num_problems_str)
+        err_count_str = fname + "."*num_dots + num_problems_str
         # jsut skip if 0 problems?
-        this_col = bcolors.RED if len(problems) > 0 else bcolors.GREEN
-        total_str = this_col + fname_str + err_count_str + bcolors.ENDC
+        # this_col = bcolors.RED if num_problems > 0 else bcolors.GREEN
+        
+        # Print diff wrt cached results
+        change = ""
+        if cached_results:
+            last_time = cached_results[fname]
+            padding = "  "
+            if num_problems > last_time:
+                change = bcolors.RED + padding + "^"
+            elif num_problems == last_time:
+                change = bcolors.YELLOW + padding + "="
+            else:
+                change = bcolors.GREEN + padding + "v"
+            change +=  " [was " + str(last_time) + "]" + bcolors.ENDC
+        total_str = err_count_str + change
         print(total_str)
     
     print(separator)
-    print(bcolors.YELLOW + "SUMMARY (by issue)" + bcolors.ENDC)
+    print(bcolors.YELLOW + bcolors.BOLD + "SUMMARY (by issue)" + bcolors.ENDC)
     print(separator)
     issue_dict = defaultdict(int)
     for problems in problems_dict.values():
@@ -244,8 +261,36 @@ def print_final_summary(problems_dict):
     print(separator)
     total_num_issues = sum(issue_dict.values())
     total_num_bad_files = len([p for p in problems_dict if len(problems_dict[p]) > 0])
-    print(bcolors.YELLOW + "TOTAL:", total_num_issues, "issues across", total_num_bad_files, "files", bcolors.ENDC)
+    print(bcolors.YELLOW + bcolors.BOLD + "TOTAL:", total_num_issues, "issues across", total_num_bad_files, "files", bcolors.ENDC)
     print(separator)
+
+
+def read_results_from_cache(cache_filename, tex_filename):
+    """Get cached results from JSON file"""
+    if not os.path.isfile(cache_filename) or os.path.getsize(cache_filename) == 0:
+        return None
+    
+    with open(cache_filename) as f:
+        jdict = json.load(f)
+        full_text_filename = os.path.abspath(tex_filename)
+        if full_text_filename not in jdict:
+            return None
+        return jdict[full_text_filename]
+
+
+def write_results_to_cache(results, cache_filename, tex_filename):
+    full_text_filename = os.path.abspath(tex_filename)
+    if os.path.isfile(cache_filename) and os.path.getsize(cache_filename) > 0:
+        with open(cache_filename) as f:
+            jdict = json.load(f)
+    else:
+        jdict = {full_text_filename: None}
+    
+    slim_results = {k:len(v) for k, v in results.items()}
+    jdict[full_text_filename] = slim_results
+    
+    with open(cache_filename, 'w') as f:
+        json.dump(jdict, f, indent=2)
 
 
 def main(in_args):
@@ -255,14 +300,20 @@ def main(in_args):
 
     print("Checking against", len(ALL_RULES), "rules")
 
+    cache_filename = "checker_cache.json"
+    cached_results = read_results_from_cache(cache_filename, args.input)
+
     files_dict = extract_input_files(args.input)
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'], args.doComments)
     bib_results = check_bib_files(files_dict['bib'])
 
     root_results.update(content_results)
-    print_final_summary(root_results)
+    print_final_summary(root_results, cached_results)
 
+    # write results to cache file
+    write_results_to_cache(root_results, cache_filename, args.input)
+    
     return 0
 
 
