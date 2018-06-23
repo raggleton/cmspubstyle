@@ -161,8 +161,10 @@ def check_and_report_errors(text, do_comments):
     """Check text for all errors, and print them out"""
     problems = []
     for broken_rule in check_text(text, do_comments):
-        report_error(broken_rule)
         problems.append(broken_rule)
+    problems = sorted(problems, key=lambda x: x.lines[0].line_num)
+    for broken_rule in problems:
+        report_error(broken_rule)
     return problems
 
 
