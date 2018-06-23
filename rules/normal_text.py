@@ -90,7 +90,7 @@ tests.extend([
 
 rules.append(
     Rule(description="No comma before et al",
-         re_pattern=re.compile(r",\s+\\etal"),
+         re_pattern=re.compile(r",\s\\etal"),
          where=ALL())
 )
 tests.extend([
@@ -201,7 +201,7 @@ tests.extend([
 
 rules.append(
     Rule(description="'due to' or 'because of'?",
-         re_pattern=re.compile(r"\bdue\b\s+\bto", re.IGNORECASE),
+         re_pattern=re.compile(r"\bdue\b\s\bto", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -248,7 +248,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Do not capitalise first letters",
-         re_pattern=re.compile(r"Standard\b\s+\bModel"),
+         re_pattern=re.compile(r"Standard\b\s\bModel"),
          where=ALL())
 )
 tests.extend([
@@ -258,7 +258,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Do not capitalise first letters",
-         re_pattern=re.compile(r"Quantum\b\s+\bChromodynamics"),
+         re_pattern=re.compile(r"Quantum\b\s\bChromodynamics"),
          where=ALL())
 )
 tests.extend([
@@ -268,7 +268,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Do capitalise first letters",
-         re_pattern=re.compile(r"monte\b\s+\bcarlo"),
+         re_pattern=re.compile(r"monte\b\s\bcarlo"),
          where=ALL())
 )
 tests.extend([
@@ -288,7 +288,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Do not start sentence with an acronym",
-         re_pattern=re.compile(r"\.\s+\b[A-Z]{2,}\b"),
+         re_pattern=re.compile(r"\.\s\b[A-Z]{2,}\b"),
          where=ALL())
 )
 tests.extend([
@@ -303,7 +303,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Do not start sentence with a symbol",
-         re_pattern=re.compile(r"\.\s+[\$\\](?!section)(?!ref)(?!subsection)(?!item)(?!begin)(?!end)"),
+         re_pattern=re.compile(r"\.\s[\$\\](?!section)(?!ref)(?!subsection)(?!item)(?!begin)(?!end)"),
          where=ALL())
 )
 tests.extend([
@@ -314,7 +314,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Use 'transverse momentum', not 'transverse energy'",
-         re_pattern=re.compile(r"transverse\b\s+\benergy", re.IGNORECASE),
+         re_pattern=re.compile(r"transverse\b\s\benergy", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -338,7 +338,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Use 'X antiquark', not 'antiX quark'",
-         re_pattern=re.compile(r"\banti-?[\w]+\b\s+quark", re.IGNORECASE),
+         re_pattern=re.compile(r"\banti-?[\w]+\b\squark", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -351,7 +351,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Use 'charged particle track' instead of 'charged track'",
-         re_pattern=re.compile(r"\bcharged\b\s+\btrack\b", re.IGNORECASE),
+         re_pattern=re.compile(r"\bcharged\b\s\btrack\b", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -362,7 +362,7 @@ tests.extend([
 
 rules.append(
     Rule(description="ATLAS & CMS Collaboration(s) have capital C",
-         re_pattern=re.compile(r"(ATLAS|CMS)\b\s+\bcollaboration"),
+         re_pattern=re.compile(r"(ATLAS|CMS)\b\s\bcollaboration"),
          where=ALL())
 )
 tests.extend([
@@ -375,7 +375,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Tevatron collaborations have lower case c",
-         re_pattern=re.compile(r"\bTevatron\b\s+\bCollaborations"),
+         re_pattern=re.compile(r"\bTevatron\b\s\bCollaborations"),
          where=ALL())
 )
 tests.extend([
@@ -385,7 +385,7 @@ tests.extend([
 
 rules.append(
     Rule(description="D0 Collaboration has capital c",
-         re_pattern=re.compile(r"\bD0\b\s+\bcollaboration"),
+         re_pattern=re.compile(r"\bD0\b\s\bcollaboration"),
          where=ALL())
 )
 tests.extend([
@@ -395,7 +395,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Colloquial expression",
-         re_pattern=re.compile(r"\bget\b\s+\brid\b\s+\bof", re.IGNORECASE),
+         re_pattern=re.compile(r"\bget\b\s\brid\b\s\bof", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -405,7 +405,7 @@ tests.extend([
 
 rules.append(
     Rule(description="'data' is plural",
-         re_pattern=re.compile(r"\bdata\b\s+\bis", re.IGNORECASE),
+         re_pattern=re.compile(r"\bdata\b\s\bis", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -488,7 +488,7 @@ for slang_word, better_word in double_slang_words:
     parts = slang_word.split()
     rules.append(
         Rule(description="Avoid '"+slang_word+"', instead '"+better_word+"'",
-             re_pattern=re.compile(r"\b"+parts[0]+r"\b\s+\b"+parts[1], re.IGNORECASE),
+             re_pattern=re.compile(r"\b"+parts[0]+r"\b\s\b"+parts[1], re.IGNORECASE),
              where=ALL())
     )
     tests.extend([
@@ -559,7 +559,7 @@ for word in upper_case:
 
 rules.append(
     Rule(description="Use 'product of the cross section and branching'",
-         re_pattern=re.compile(r"\bcross\b\s+\bsection\b\s+\btimes\b\s+\bbranching\b", re.IGNORECASE),
+         re_pattern=re.compile(r"\bcross\b\s\bsection\b\s\btimes\b\s\bbranching\b", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -570,7 +570,7 @@ tests.extend([
 
 rules.append(
     Rule(description="Avoid indefinite article with '95% CL'",
-         re_pattern=re.compile(r"\ba\b\s+\b95\b\s*\\?\%\s*\\?CL", re.IGNORECASE),
+         re_pattern=re.compile(r"\ba\b\s\b95\b\s*\\?\%\s*\\?CL", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -640,7 +640,7 @@ use_abbreviation = [
 for short_word, full_word in use_abbreviation:
     rules.append(
         Rule(description="Abbreviate '"+full_word+"' to '"+short_word+"' in sentence.",
-             re_pattern=re.compile(r"(?<!\{figure\})(?<!\.)\s+"+full_word),
+             re_pattern=re.compile(r"(?<!\{figure\})(?<!\.)\s"+full_word),
              where=ALL())
     )
     tests.extend([
@@ -655,7 +655,7 @@ for short_word, full_word in use_abbreviation:
 
     rules.append(
         Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' at start of sentence.",
-             re_pattern=re.compile(r"\.\s+"+short_word.replace(".", r"\.")),
+             re_pattern=re.compile(r"\.\s"+short_word.replace(".", r"\.")),
              where=ALL())
     )
     tests.extend([

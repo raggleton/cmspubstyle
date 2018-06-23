@@ -61,32 +61,35 @@ tests.extend([
 ])
 
 # DASHES
-# rules.append(
-#     Rule(description="Use en dash -- for numerical range",
-#          # re_pattern=re.compile(r"\d+\s*?(-|---)\s*?\d+"),
-#          re_pattern=re.compile(r"(?<!cite)[\w{-]*?\d+\s*?(-|---)\s*?\d+"),
-#          where=ALL())
-# )
-# tests.extend([
-#     TestRule(rule=rules[-1], text="6-7"),
-#     TestRule(rule=rules[-1], text="6 - 7"),
-#     TestRule(rule=rules[-1], text="6---7"),
-#     TestRule(rule=rules[-1], text="6 -- 7", should_pass=True),
-#     TestRule(rule=rules[-1], text="6--7", should_pass=True),
-# ])
+rules.append(
+    Rule(description="Use en dash -- for numerical range",
+         # re_pattern=re.compile(r"[\d.]+\s*?(-|---)\s*?[\d.]+"),
+         re_pattern=re.compile(r"(?<!cite{)[\w-]*?[\d.]+\s?(-|---)\s?[\d.]+"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="6-7"),
+    TestRule(rule=rules[-1], text="6.1-7.2"),
+    TestRule(rule=rules[-1], text="6 - 7"),
+    TestRule(rule=rules[-1], text="6---7"),
+    TestRule(rule=rules[-1], text="6 -- 7", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\cite{CMS-PAS-17-01}", should_pass=True),
+    TestRule(rule=rules[-1], text="6--7", should_pass=True),
+    TestRule(rule=rules[-1], text="6.1--7.2", should_pass=True),
+])
 
-# rules.append(
-#     Rule(description="Use en dash -- for two people",
-#          re_pattern=re.compile(r"^((?!cite).)*?[A-Z][a-z]*\s*?(-|---)\s*?[A-Z][a-z]*"),
-#          where=ALL())
-# )
-# tests.extend([
-#     TestRule(rule=rules[-1], text="Randall-Sundrum"),
-#     TestRule(rule=rules[-1], text="Randall - Sundrum"),
-#     TestRule(rule=rules[-1], text="Randall---Sundrum"),
-#     TestRule(rule=rules[-1], text="Randall -- Sundrum", should_pass=True),
-#     TestRule(rule=rules[-1], text="Randall--Sundrum", should_pass=True),
-# ])
+rules.append(
+    Rule(description="Use en dash -- for two people",
+         re_pattern=re.compile(r"^((?!cite).)*?\b[A-Z][a-z]*\b\s?(-|---)\s?\b[A-Z][a-z]*\b"),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text="Randall-Sundrum"),
+    TestRule(rule=rules[-1], text="Randall - Sundrum"),
+    TestRule(rule=rules[-1], text="Randall---Sundrum"),
+    TestRule(rule=rules[-1], text="Randall -- Sundrum", should_pass=True),
+    TestRule(rule=rules[-1], text="Randall--Sundrum", should_pass=True),
+])
 
 ##############################################################################
 # SYMBOLS
