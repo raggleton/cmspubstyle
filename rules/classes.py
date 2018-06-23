@@ -17,6 +17,15 @@ def find_ge(a, x):
 TextLine = namedtuple("TextLine", ["line_num", "char_num_start", "text"])
 
 
+def cleanup_tex_line(text):
+    # replace multiple spaces with 1 space (simplifies matching)
+    if text == r"\n":
+        return ""
+    text = re.sub(r" {2,}", " ", text)
+    text = text.rstrip()
+    return text
+
+
 class Text(object):
     """Class to aid storage & finding in lines of latex"""
 
@@ -31,14 +40,9 @@ class Text(object):
                     # relevant line(s)
                     char_num_start = sum([len(l.text) for l in self.text_contents]) + 1
                     this_line = line
-                    if this_line == r"\n":
-                        this_line = ""
-                    else:
-                        # replace multiple spaces with 1 space (simplifies matching)
-                        this_line = re.sub(r" {2,}", " ", this_line)
-                        this_line = this_line.rstrip()
-                        if (len(text) >= 2) and (ind < (len(text)+line_num_start-1)) and (text[ind-line_num_start+1].rstrip() != ""):
-                            this_line += " "  # latex auto adds a space. but only if text on next line
+                    this_line = cleanup_tex_line(this_line)
+                    if (len(text) >= 2) and (ind < (len(text)+line_num_start-1)) and (text[ind-line_num_start+1].rstrip() != ""):
+                        this_line += " "  # latex auto adds a space. but only if text on next line
                     this_textline = TextLine(line_num=ind, char_num_start=char_num_start, text=this_line)
                     self.text_contents.append(this_textline)
             # Creation from list of TextLine e.g. from output of another Text
