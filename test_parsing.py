@@ -56,13 +56,13 @@ def test_environment_outer():
     env_lines = t.iter_environment("chorus")
     expect = [
         Text([
-            TextLine(line_num=12, char_num_start=1, text=r"\begin{center}"),
-            TextLine(line_num=13, char_num_start=1, text=r"    It's gonna take a lot to take me away from you"),
-            TextLine(line_num=14, char_num_start=1, text=r"    There's nothing that a $$100$$ men or more could ever do"),
-            TextLine(line_num=15, char_num_start=1, text=r"    I bless the rains down in Africa"),
-            TextLine(line_num=16, char_num_start=1, text=r"    Gonna take some time to do the things we never had"),
-            TextLine(line_num=17, char_num_start=1, text=r"    \caption{Bah bah}\label{chorus1}"),
-            TextLine(line_num=18, char_num_start=1, text=r"\end{center}"),
+            TextLine(line_num=12, char_num_start=1, text=r"\begin{center} "),
+            TextLine(line_num=13, char_num_start=1, text=r" It's gonna take a lot to take me away from you "),
+            TextLine(line_num=14, char_num_start=1, text=r" There's nothing that a $$100$$ men or more could ever do "),
+            TextLine(line_num=15, char_num_start=1, text=r" I bless the rains down in Africa "),
+            TextLine(line_num=16, char_num_start=1, text=r" Gonna take some time to do the things we never had "),
+            TextLine(line_num=17, char_num_start=1, text=r" \caption{Bah bah}\label{chorus1} "),
+            TextLine(line_num=18, char_num_start=1, text=r"\end{center} "),
         ])
     ]
     for e, m in zip(expect, env_lines):
@@ -76,11 +76,11 @@ def test_environment_inner():
     env_lines = t.iter_environment("center")
     expect = [
         Text([
-            TextLine(line_num=13, char_num_start=1, text=r"    It's gonna take a lot to take me away from you"),
-            TextLine(line_num=14, char_num_start=1, text=r"    There's nothing that a $$100$$ men or more could ever do"),
-            TextLine(line_num=15, char_num_start=1, text=r"    I bless the rains down in Africa"),
-            TextLine(line_num=16, char_num_start=1, text=r"    Gonna take some time to do the things we never had"),
-            TextLine(line_num=17, char_num_start=1, text=r"    \caption{Bah bah}\label{chorus1}"),
+            TextLine(line_num=13, char_num_start=1, text=r" It's gonna take a lot to take me away from you "),
+            TextLine(line_num=14, char_num_start=1, text=r" There's nothing that a $$100$$ men or more could ever do "),
+            TextLine(line_num=15, char_num_start=1, text=r" I bless the rains down in Africa "),
+            TextLine(line_num=16, char_num_start=1, text=r" Gonna take some time to do the things we never had "),
+            TextLine(line_num=17, char_num_start=1, text=r" \caption{Bah bah}\label{chorus1} "),
         ])
     ]
     for e, m in zip(expect, env_lines):
@@ -115,7 +115,7 @@ def test_command():
 def test_find():
     find_results = t.find_iter(re.compile(r"[\s.](\w+)[\s.]+\1", re.IGNORECASE))
     expect = [
-        TextLine(line_num=7, char_num_start=1, text="I stopped an old man along the way way")
+        TextLine(line_num=7, char_num_start=1, text="I stopped an old man along the way way ")
     ]
     for e, m in zip(expect, find_results):
         # find_iter returns (match, [TextLine]) hence the [1][0]

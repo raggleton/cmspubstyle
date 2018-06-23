@@ -29,16 +29,25 @@ class Text(object):
                     # don't include the newline (which python counts as 1 char) since
                     # we remove it when searching, and it would screw up looking for
                     # relevant line(s)
-                    char_num_start = sum([len(l.text.rstrip('\n')) for l in self.text_contents]) + 1
-                    this_line = TextLine(line_num=ind, char_num_start=char_num_start, text=line)
-                    self.text_contents.append(this_line)
+                    char_num_start = sum([len(l.text) for l in self.text_contents]) + 1
+                    this_line = line
+                    if this_line == r"\n":
+                        this_line = ""
+                    else:
+                        # replace multiple spaces with 1 space (simplifies matching)
+                        this_line = re.sub(r" {2,}", " ", this_line)
+                        this_line = this_line.rstrip()
+                        if (len(text) >= 2) and (ind < (len(text)+line_num_start-1)) and (text[ind-line_num_start+1].rstrip() != ""):
+                            this_line += " "  # latex auto adds a space. but only if text on next line
+                    this_textline = TextLine(line_num=ind, char_num_start=char_num_start, text=this_line)
+                    self.text_contents.append(this_textline)
             # Creation from list of TextLine e.g. from output of another Text
             elif type(text[0]) == TextLine:
                 for line in text:
                     # reset char_num_start
                     char_num_start = sum([len(l.text.rstrip('\n')) for l in self.text_contents]) + 1
-                    this_line = TextLine(line_num=line.line_num, char_num_start=char_num_start, text=line.text)
-                    self.text_contents.append(this_line)
+                    this_textline = TextLine(line_num=line.line_num, char_num_start=char_num_start, text=line.text)
+                    self.text_contents.append(this_textline)
             else:
                 raise RuntimeError("Unknown type %s for text arg for Text class - should be list[str] or list[TextLine]" % type(text[0]))
             
