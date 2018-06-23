@@ -135,26 +135,26 @@ def check_text(text, do_comments):
                         continue
                     yield RuleBroken(rule=rule, match=match, lines=lines)
 
-            elif isinstance(location, COMMAND):
-                print('doing', location)
-                for this_cmd_text in text.iter_command(location.opt):
-                    print(this_cmd_text)
-                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
-                        yield RuleBroken(rule=rule, match=match, lines=lines)
+            # elif isinstance(location, COMMAND):
+            #     print('doing', location)
+            #     for this_cmd_text in text.iter_command(location.opt):
+            #         print(this_cmd_text)
+            #         for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+            #             yield RuleBroken(rule=rule, match=match, lines=lines)
 
-            elif isinstance(location, INLINE):
-                print('doing', location)
-                for this_cmd_text in text.iter_inline_delim(location.opt):
-                    print(this_cmd_text)
-                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
-                        yield RuleBroken(rule=rule, match=match, lines=lines)
+            # elif isinstance(location, INLINE):
+            #     print('doing', location)
+            #     for this_cmd_text in text.iter_inline_delim(location.opt):
+            #         print(this_cmd_text)
+            #         for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+            #             yield RuleBroken(rule=rule, match=match, lines=lines)
 
-            elif isinstance(location, ENVIRONMENT):
-                print('doing', location)
-                for this_cmd_text in text.iter_environment(location.opt):
-                    print(this_cmd_text)
-                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
-                        yield RuleBroken(rule=rule, match=match, lines=lines)
+            # elif isinstance(location, ENVIRONMENT):
+            #     print('doing', location)
+            #     for this_cmd_text in text.iter_environment(location.opt):
+            #         print(this_cmd_text)
+            #         for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+            #             yield RuleBroken(rule=rule, match=match, lines=lines)
 
 
 def check_and_report_errors(text, do_comments):
