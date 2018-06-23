@@ -584,9 +584,9 @@ tests.extend([
 
 
 always_full_word = [
-('Tab.', 'Table'),
-('Sec.', 'Section'),
-('App.', 'Appendix'),
+    ('Tab.', 'Table'),
+    ('Sec.', 'Section'),
+    ('App.', 'Appendix'),
 ]
 
 for short_word, full_word in always_full_word:
@@ -603,34 +603,23 @@ for short_word, full_word in always_full_word:
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
     ])
 
+    # here we assume that the user refers to a Section etc with Section~\ref{...}
     rules.append(
         Rule(description="Always capitalise '"+full_word+"'",
-             re_pattern=re.compile(r"(?<!{)(?<!\\)(?<!\\sub)\s*?"+full_word.lower()),
+             re_pattern=re.compile(r"\b"+full_word.lower()+r"\b[~ ]?\\ref"),
              where=ALL())
     )
     tests.extend([
         TestRule(rule=rules[-1], text=full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
-        TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
-        TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
+        TestRule(rule=rules[-1], text=r"the "+full_word.lower(), should_pass=True),
+        TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\cite{", should_pass=True),  # we're citing not ref-ing
         TestRule(rule=rules[-1], text=r"\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"\sub"+full_word.lower()+r"{ ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
     ])
 
-    if full_word == "Section":
-        rules.append(
-            Rule(description="Always capitalise '"+full_word+"'",
-                 re_pattern=re.compile(r"^(?!.*cross).*"+full_word.lower()),
-                 where=ALL())
-        )
-        tests.extend([
-            TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
-            TestRule(rule=rules[-1], text=" the "+full_word.lower()),
-            TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
-            TestRule(rule=rules[-1], text=" the cross  "+full_word.lower(), should_pass=True),
-        ])
 
 use_abbreviation = [
 ('Fig.', 'Figure'),
