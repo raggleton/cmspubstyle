@@ -143,6 +143,7 @@ rules.append(
          where=ALL())
 )
 tests.extend([
+    TestRule(rule=rules[-1], text=r"22MeV$"),
     TestRule(rule=rules[-1], text=r"22 MeV$"),
     TestRule(rule=rules[-1], text=r"22 MeVc$"),
     TestRule(rule=rules[-1], text=r"22 MeVcc$"),
@@ -157,6 +158,7 @@ rules.append(
          where=ALL())
 )
 tests.extend([
+    TestRule(rule=rules[-1], text=r"22GeV$"),
     TestRule(rule=rules[-1], text=r"22 GeV$"),
     TestRule(rule=rules[-1], text=r"22 GeVc$"),
     TestRule(rule=rules[-1], text=r"22 GeVcc$"),
@@ -171,6 +173,7 @@ rules.append(
          where=ALL())
 )
 tests.extend([
+    TestRule(rule=rules[-1], text=r"22TeV$"),
     TestRule(rule=rules[-1], text=r"22 TeV$"),
     TestRule(rule=rules[-1], text=r"22 TeVc$"),
     TestRule(rule=rules[-1], text=r"22 TeVcc$"),
