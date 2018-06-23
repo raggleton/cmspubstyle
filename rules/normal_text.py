@@ -484,7 +484,7 @@ for slang_word, better_word in slang_words:
         TestRule(rule=rules[-1], text=r"the "+slang_word+" rate"),
         TestRule(rule=rules[-1], text=r" ."+slang_word+"    ele"),
         TestRule(rule=rules[-1], text=r"the f"+slang_word+"ery is", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\ref{sec:"+slang_word+"}", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\ref{sec:"+slang_word+"}", should_pass=True),
     ])
 
 double_slang_words = [
@@ -608,7 +608,7 @@ for short_word, full_word in always_full_word:
         TestRule(rule=rules[-1], text=short_word+r"~\ref{"),
         TestRule(rule=rules[-1], text=r"the "+short_word),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\begin{"+full_word+r"~\ref ", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
     ])
 
@@ -621,10 +621,10 @@ for short_word, full_word in always_full_word:
         TestRule(rule=rules[-1], text=full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
-        # TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\begin{"+full_word.lower()+r"}", should_pass=True),
+        TestRule(rule=rules[-1], text=" the cross  "+full_word.lower()+r"~\ref{", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\sub"+full_word.lower()+r"{ ", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\sub"+full_word.lower()+r"{ ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
     ])
 
@@ -658,8 +658,8 @@ for short_word, full_word in use_abbreviation:
         TestRule(rule=rules[-1], text=r"the "+short_word, should_pass=True),
         TestRule(rule=rules[-1], text=r". "+full_word, should_pass=True),
         TestRule(rule=rules[-1], text=r". "+full_word+" shows", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\begin{"+full_word+r"~\ref ", should_pass=True),
-        TestRule(rule=rules[-1], text=r"\\begin{"+short_word+r"~\ref ", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+full_word+r"~\ref ", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+short_word+r"~\ref ", should_pass=True),
     ])
 
     rules.append(
@@ -684,7 +684,7 @@ for short_word, full_word in use_abbreviation:
         TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
         TestRule(rule=rules[-1], text=r". "+full_word.lower()),
         TestRule(rule=rules[-1], text=r"."+full_word.lower()),
-        TestRule(rule=rules[-1], text=r"\\begin{"+full_word.lower()+r"}", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True),
         TestRule(rule=rules[-1], text=r"abc"+full_word+"def", should_pass=True),
@@ -701,7 +701,7 @@ for short_word, full_word in use_abbreviation:
         TestRule(rule=rules[-1], text=r"the "+short_word.lower()),
         TestRule(rule=rules[-1], text=r"."+short_word.lower()),
         TestRule(rule=rules[-1], text=r". "+short_word.lower()),
-        TestRule(rule=rules[-1], text=r"\\begin{"+short_word.lower()+r"}", should_pass=True),
+        TestRule(rule=rules[-1], text=r"\begin{"+short_word.lower()+r"}", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+short_word+r"~\ref ", should_pass=True),
         TestRule(rule=rules[-1], text=r"the "+short_word+" shows", should_pass=True),
         TestRule(rule=rules[-1], text=r"abc"+short_word+"def", should_pass=True),

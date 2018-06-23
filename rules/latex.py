@@ -37,7 +37,7 @@ rules.append(
 )
 tests.extend([
     TestRule(rule=rules[-1], text="i.e."),
-    TestRule(rule=rules[-1], text="\\ie", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\ie", should_pass=True),
 ])
 
 rules.append(
@@ -47,7 +47,7 @@ rules.append(
 )
 tests.extend([
     TestRule(rule=rules[-1], text="e.g."),
-    TestRule(rule=rules[-1], text="\\eg, he's a pain", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\eg, he's a pain", should_pass=True),
 ])
 
 rules.append(
@@ -57,7 +57,7 @@ rules.append(
 )
 tests.extend([
     TestRule(rule=rules[-1], text="Ram et al"),
-    TestRule(rule=rules[-1], text="Dave \\etal", should_pass=True),
+    TestRule(rule=rules[-1], text=r"Dave \etal", should_pass=True),
 ])
 
 # DASHES
@@ -121,9 +121,9 @@ rules.append(
          where=ALL())
 )
 tests.extend([
-    TestRule(rule=rules[-1], text=r"\\PTslash"),
-    TestRule(rule=rules[-1], text=r"\\PTm"),
-    TestRule(rule=rules[-1], text=r"\\ptmiss", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\PTslash"),
+    TestRule(rule=rules[-1], text=r"\PTm"),
+    TestRule(rule=rules[-1], text=r"\ptmiss", should_pass=True),
 ])
 
 rules.append(
@@ -132,9 +132,9 @@ rules.append(
          where=ALL())
 )
 tests.extend([
-    TestRule(rule=rules[-1], text=r"\\ETslash"),
-    TestRule(rule=rules[-1], text=r"\\ETm", should_pass=True),
-    TestRule(rule=rules[-1], text=r"\\etmiss", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\ETslash"),
+    TestRule(rule=rules[-1], text=r"\ETm", should_pass=True),
+    TestRule(rule=rules[-1], text=r"\etmiss", should_pass=True),
 ])
 
 rules.append(
@@ -147,9 +147,9 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"22 MeV$"),
     TestRule(rule=rules[-1], text=r"22 MeVc$"),
     TestRule(rule=rules[-1], text=r"22 MeVcc$"),
-    TestRule(rule=rules[-1], text=r"36\\MeV", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\MeVc", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\MeVcc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\MeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\MeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\MeVcc", should_pass=True),
 ])
 
 rules.append(
@@ -162,9 +162,9 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"22 GeV$"),
     TestRule(rule=rules[-1], text=r"22 GeVc$"),
     TestRule(rule=rules[-1], text=r"22 GeVcc$"),
-    TestRule(rule=rules[-1], text=r"36\\GeV", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\GeVc", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\GeVcc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\GeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\GeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\GeVcc", should_pass=True),
 ])
 
 rules.append(
@@ -177,9 +177,9 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"22 TeV$"),
     TestRule(rule=rules[-1], text=r"22 TeVc$"),
     TestRule(rule=rules[-1], text=r"22 TeVcc$"),
-    TestRule(rule=rules[-1], text=r"36\\TeV", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\TeVc", should_pass=True),
-    TestRule(rule=rules[-1], text=r"36\\TeVcc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\TeV", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\TeVc", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\TeVcc", should_pass=True),
 ])
 
 rules.append(
@@ -189,7 +189,7 @@ rules.append(
          where=ALL())
 )
 tests.extend([
-    TestRule(rule=rules[-1], text=r"$ a_{b} \\frac{1}{2}$"),
+    TestRule(rule=rules[-1], text=r"$ a_{b} \frac{1}{2}$"),
     TestRule(rule=rules[-1], text=r"1/2", should_pass=True),
 ])
 
@@ -200,7 +200,7 @@ rules.append(
 )
 tests.extend([
     TestRule(rule=rules[-1], text=r"$36.5 1/fb$"),
-    TestRule(rule=rules[-1], text=r"36\\fbinv", should_pass=True),
+    TestRule(rule=rules[-1], text=r"36\fbinv", should_pass=True),
 ])
 
 common_func_names = ['sin', 'cos', 'tan', 'exp', 'log', 'ln']
