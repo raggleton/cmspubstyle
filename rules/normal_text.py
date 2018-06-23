@@ -14,7 +14,7 @@ rules, tests = [], []
 ##############################################################################
 rules.append(
     Rule(description="Duplicate words",
-         re_pattern=re.compile(r"\b(\w+)[\s.,]+\1[\s.,]+", re.IGNORECASE),
+         re_pattern=re.compile(r"\b(\w+)\b[\s.,]+\b\1\b", re.IGNORECASE),
          where=ALL())
 )
 tests.extend([
@@ -157,6 +157,7 @@ for word in unhyphenated:
         TestRule(rule=rules[-1], text=pre+" "+post, should_pass=True),
         TestRule(rule=rules[-1], text=pre+"  "+post, should_pass=True),
         TestRule(rule=rules[-1], text="blahblah "+post, should_pass=True),
+        TestRule(rule=rules[-1], text=post+"ged", should_pass=True),
         # TestRule(rule=rules[-1], text=r"\cPQ"+pre+" "+post, should_pass=True),
     ])
 
