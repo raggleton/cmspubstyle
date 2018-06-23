@@ -63,12 +63,12 @@ tests.extend([
 # DASHES
 rules.append(
     Rule(description="Use en dash -- for numerical range",
-         # re_pattern=re.compile(r"[\d.]+\s*?(-|---)\s*?[\d.]+"),
-         re_pattern=re.compile(r"(?<!cite{)[\w-]*?[\d.]+\s?(-|---)\s?[\d.]+"),
+         re_pattern=re.compile(r"(?<![\w\d-])[\d.]+\s?(-|---)\s?[\d.]+"),
          where=ALL())
 )
 tests.extend([
     TestRule(rule=rules[-1], text="6-7"),
+    # TestRule(rule=rules[-1], text="-6-7"),  # FIXME how to handle this?
     TestRule(rule=rules[-1], text="6.1-7.2"),
     TestRule(rule=rules[-1], text="6 - 7"),
     TestRule(rule=rules[-1], text="6---7"),
@@ -76,6 +76,7 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"\cite{CMS-PAS-17-01}", should_pass=True),
     TestRule(rule=rules[-1], text="6--7", should_pass=True),
     TestRule(rule=rules[-1], text="6.1--7.2", should_pass=True),
+    # TestRule(rule=rules[-1], text="-6.1--7.2", should_pass=True),  # FIXME how to handle this?
 ])
 
 rules.append(
