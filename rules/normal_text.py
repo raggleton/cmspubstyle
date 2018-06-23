@@ -148,7 +148,7 @@ for word in unhyphenated:
     pre, post = word.split("|")
     rules.append(
         Rule(description="Unnecessary hyphenation",
-             re_pattern=re.compile(pre+"-"+post, re.IGNORECASE),
+             re_pattern=re.compile(pre+"-"+post+r"\b", re.IGNORECASE),
              where=ALL())
     )
     tests.extend([
@@ -179,7 +179,7 @@ tests.extend([
 # COMMON GRAMMATICAL MISTAKES
 ##############################################################################
 rules.append(
-    Rule(description="Wrong indefinite article, SM requires 'an'",
+    Rule(description="Wrong indefinite article, 'SM' requires 'an'",
          re_pattern=re.compile(r"a SM", re.IGNORECASE),
          where=ALL())
 )
@@ -189,7 +189,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Wrong indefinite article, SUSY requires 'a'",
+    Rule(description="Wrong indefinite article, 'SUSY' requires 'a'",
          re_pattern=re.compile(r"\ban SUSY", re.IGNORECASE),
          where=ALL())
 )
@@ -276,17 +276,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Do not use d.o.f for degrees of freedom (use dof or n_d)",
-         re_pattern=re.compile(r"d\.o\.f"),
-         where=ALL())
-)
-tests.extend([
-    TestRule(rule=rules[-1], text="d.o.f"),
-    TestRule(rule=rules[-1], text="dof", should_pass=True),
-])
-
-rules.append(
-    Rule(description="Do not use d.o.f for degrees of freedom (use dof or n_d)",
+    Rule(description="Do not use 'd.o.f' for degrees of freedom (use dof or n_d)",
          re_pattern=re.compile(r"d\.o\.f"),
          where=ALL())
 )
@@ -578,7 +568,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Avoid indefinite article with 95% CL",
+    Rule(description="Avoid indefinite article with '95% CL'",
          re_pattern=re.compile(r"\ba\b\s+\b95\b\s*\\?\%\s*\\?CL", re.IGNORECASE),
          where=ALL())
 )

@@ -93,7 +93,7 @@ tests.extend([
 ##############################################################################
 
 rules.append(
-    Rule(description="Use anti-\\kt",
+    Rule(description="Use 'anti-\\kt'",
          re_pattern=re.compile(r"anti\-(?!\\kt)\$?k"),
          where=ALL())
 )
@@ -105,7 +105,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\mathcal{B} for branching fraction",
+    Rule(description="Use '\\mathcal{B}' for branching fraction",
          re_pattern=re.compile(r"\bB\.?R\.?\b"),
          where=ALL())
 )
@@ -116,7 +116,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\ptmiss (without slash)",
+    Rule(description="Use '\\ptmiss' (without slash)",
          re_pattern=re.compile(r"\\PT(slash|m)"),
          where=ALL())
 )
@@ -127,7 +127,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\etmiss (without slash)",
+    Rule(description="Use '\\etmiss' (without slash)",
          re_pattern=re.compile(r"\\ETslash"),
          where=ALL())
 )
@@ -138,7 +138,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\MeV instead of MeV",
+    Rule(description="Use '\\MeV' instead of 'MeV'",
          re_pattern=re.compile(r"(?<!\\)MeV"),
          where=ALL())
 )
@@ -153,7 +153,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\GeV instead of GeV",
+    Rule(description="Use '\\GeV' instead of 'GeV'",
          re_pattern=re.compile(r"(?<!\\)GeV"),
          where=ALL())
 )
@@ -168,7 +168,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\TeV instead of TeV",
+    Rule(description="Use '\\TeV' instead of 'TeV'",
          re_pattern=re.compile(r"(?<!\\)TeV"),
          where=ALL())
 )
@@ -183,7 +183,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Do not use \\frac inline, use /",
+    Rule(description="Do not use '\\frac' inline, use '/'",
          # FIXME: make this INLINE
          re_pattern=re.compile(r"\\frac"),
          where=ALL())
@@ -194,7 +194,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\fbinv for luminosity",
+    Rule(description="Use '\\fbinv' for luminosity",
          re_pattern=re.compile(r"1/fb"),
          where=ALL())
 )
@@ -206,8 +206,9 @@ tests.extend([
 common_func_names = ['sin', 'cos', 'tan', 'exp', 'log', 'ln']
 for func_name in common_func_names:
     rules.append(
-        Rule(description="Use \\"+func_name,
-             re_pattern=re.compile(r"(?<!\\)"+func_name+r"[^\w]"),
+        Rule(description="Use macro '\\"+func_name+"'",
+             re_pattern=re.compile(r"(?<!\\)"+func_name+r"[^\w\-]"),
+             # re_pattern=re.compile(r"(?<!\\)"+func_name+r"\s*?(\\|\(|\[)"),
              where=ALL())
              # where=[INLINE("$"), COMMAND("EQUATION")])
     )
@@ -218,10 +219,12 @@ for func_name in common_func_names:
         TestRule(rule=rules[-1], text=r"$ "+func_name+r"\\phi$"),
         TestRule(rule=rules[-1], text=r"$a \cdot \\"+func_name+r"(x)$", should_pass=True),
         TestRule(rule=rules[-1], text=r" u"+func_name+r"g ", should_pass=True),
+        TestRule(rule=rules[-1], text=r" "+func_name+r"-normal ", should_pass=True),
+        TestRule(rule=rules[-1], text=r" "+func_name+r" normal", should_pass=True),
     ])
 
 rules.append(
-    Rule(description="Use \\begin{equation}...\\end{equation} over $$...$$",
+    Rule(description="Use '\\begin{equation}...\\end{equation}' over '$$...$$'",
          re_pattern=re.compile(r"\$\$.*?\$\$"),
          where=ALL())
 )
@@ -231,7 +234,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Prefer \\to over \\rightarrow",
+    Rule(description="Prefer '\\to' over '\\rightarrow'",
          re_pattern=re.compile(r"\\rightarrow"),
          where=ALL())
 )
@@ -241,7 +244,7 @@ tests.extend([
 ])
 
 rules.append(
-    Rule(description="Use \\text{...} not {\\text...}",
+    Rule(description="Use '\\text{...}' not '{\\text...}'",
          re_pattern=re.compile(r"\{\\text[^{]*?\}", re.IGNORECASE),
          where=ALL())
 )
