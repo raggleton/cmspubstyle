@@ -239,3 +239,14 @@ tests.extend([
     TestRule(rule=rules[-1], text=r"a \rightarrow b"),
     TestRule(rule=rules[-1], text=r"a \to b$", should_pass=True),
 ])
+
+rules.append(
+    Rule(description="Use \\text{...} not {\\text...}",
+         re_pattern=re.compile(r"\{\\text[^{]*?\}", re.IGNORECASE),
+         where=ALL())
+)
+tests.extend([
+    TestRule(rule=rules[-1], text=r"{\text abs}"),
+    TestRule(rule=rules[-1], text=r"\text{abs}", should_pass=True),
+    TestRule(rule=rules[-1], text=r"{\text{abs}}", should_pass=True),
+])
