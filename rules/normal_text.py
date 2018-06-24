@@ -591,7 +591,7 @@ always_full_word = [
 
 for short_word, full_word in always_full_word:
     rules.append(
-        Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"'",
+        Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' when referencing that label",
              re_pattern=re.compile(r"\b"+short_word.replace(".", r"\.")),
              where=ALL())
     )
@@ -605,7 +605,7 @@ for short_word, full_word in always_full_word:
 
     # here we assume that the user refers to a Section etc with Section~\ref{...}
     rules.append(
-        Rule(description="Always capitalise '"+full_word+"'",
+        Rule(description="Always capitalise '"+full_word+"' when referencing that label",
              re_pattern=re.compile(r"\b"+full_word.lower()+r"\b[~ ]?\\ref"),
              where=ALL())
     )
