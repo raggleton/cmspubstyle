@@ -1,8 +1,8 @@
 import pytest
 from itertools import chain
 
-from rules import normal_text
-from rules import latex
+from cmspubstyle.rules import normal_text
+from cmspubstyle.rules import latex
 
 
 ALL_TESTS = normal_text.tests + latex.tests

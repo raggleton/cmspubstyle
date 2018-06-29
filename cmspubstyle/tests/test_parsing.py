@@ -1,4 +1,4 @@
-from CMSchecker import Text, TextLine
+from cmspubstyle.rules.classes import Text, TextLine
 
 doc = r"""\section{Corrections for $\PT > 50 \GeV$}
 

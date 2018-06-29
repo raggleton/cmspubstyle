@@ -4,7 +4,7 @@ For rules concerning normal text, like duplicate words, missing spaces.
 """
 
 import re
-from rules.classes import *
+from cmspubstyle.rules.classes import *
 
 
 rules, tests = [], []
@@ -583,6 +583,11 @@ tests.extend([
 ])
 
 
+# For referring to sections, equations, etc there are several rules
+# Some of these should never be abbreviated, others should
+# Only capitalise when referring to a specific item
+# Use a ~ to make sure line breaks dont damage it
+# Same with citations
 always_full_word = [
     ('Tab.', 'Table'),
     ('Sec.', 'Section'),
@@ -592,7 +597,7 @@ always_full_word = [
 for short_word, full_word in always_full_word:
     rules.append(
         Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' when referencing that label",
-             re_pattern=re.compile(r"\b"+short_word.replace(".", r"\.")),
+             re_pattern=re.compile(r"\b"+short_word.replace(".", r"\."), re.IGNORECASE),
              where=ALL())
     )
     tests.extend([
@@ -606,7 +611,7 @@ for short_word, full_word in always_full_word:
     # here we assume that the user refers to a Section etc with Section~\ref{...}
     rules.append(
         Rule(description="Always capitalise '"+full_word+"' when referencing that label",
-             re_pattern=re.compile(r"\b"+full_word.lower()+r"\b[~ ]?\\ref"),
+             re_pattern=re.compile(r"\b"+full_word.lower()+r"\b[~ ]\\ref"),
              where=ALL())
     )
     tests.extend([
@@ -622,19 +627,19 @@ for short_word, full_word in always_full_word:
 
 
 use_abbreviation = [
-('Fig.', 'Figure'),
-('Eq.', 'Equation'),
+    ('Fig.', 'Figure'),
+    ('Eq.', 'Equation'),
 ]
 
 for short_word, full_word in use_abbreviation:
     rules.append(
-        Rule(description="Abbreviate '"+full_word+"' to '"+short_word+"' in sentence.",
-             re_pattern=re.compile(r"(?<!\{figure\})(?<!\.)\s"+full_word),
+        Rule(description="Abbreviate '"+full_word+"' to '"+short_word+"' when referencing that label in sentence.",
+             re_pattern=re.compile(r"(?<!\{figure\})(?<!\.)\s"+full_word+r"[ ~]?\\ref", re.IGNORECASE),
              where=ALL())
     )
     tests.extend([
         TestRule(rule=rules[-1], text=r"the "+full_word+r"~\ref "),
-        TestRule(rule=rules[-1], text=r"the "+full_word+" shows"),
+        TestRule(rule=rules[-1], text=r"the "+full_word+" shows", should_pass=True), # ok to not abbreviate if no ref?
         TestRule(rule=rules[-1], text=r"the "+short_word, should_pass=True),
         TestRule(rule=rules[-1], text=r". "+full_word, should_pass=True),
         TestRule(rule=rules[-1], text=r". "+full_word+" shows", should_pass=True),
@@ -643,24 +648,23 @@ for short_word, full_word in use_abbreviation:
     ])
 
     rules.append(
-        Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' at start of sentence.",
-             re_pattern=re.compile(r"\.\s"+short_word.replace(".", r"\.")),
+        Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' when referencing that label at start of sentence.",
+             re_pattern=re.compile(r"\.\s"+short_word.replace(".", r"\.")+r"[ ~]?\\ref"),
              where=ALL())
     )
     tests.extend([
-        TestRule(rule=rules[-1], text=". "+short_word),
-        TestRule(rule=rules[-1], text=r". "+full_word+" shows", should_pass=True),
+        TestRule(rule=rules[-1], text=". "+short_word+r"~\ref{"),
         TestRule(rule=rules[-1], text=r". "+full_word+r"~\ref{", should_pass=True),
     ])
 
     rules.append(
-        Rule(description="Always capitalise '"+full_word+"'",
-             re_pattern=re.compile(r"(?<!{)(?<!\\)"+full_word.lower()),
+        Rule(description="Always capitalise '"+full_word+"' when referencing that label",
+             re_pattern=re.compile(r"(?<!{)(?<!\\)"+full_word.lower()+r"[ ~]?\\ref"),
              where=ALL())
     )
     tests.extend([
         TestRule(rule=rules[-1], text=full_word.lower()+r"~\ref{"),
-       TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
+        TestRule(rule=rules[-1], text=" the "+full_word.lower()+r"~\ref{"),
         TestRule(rule=rules[-1], text=r"the "+full_word.lower()),
         TestRule(rule=rules[-1], text=r". "+full_word.lower()),
         TestRule(rule=rules[-1], text=r"."+full_word.lower()),
@@ -672,7 +676,7 @@ for short_word, full_word in use_abbreviation:
     
     rules.append(
         Rule(description="Always capitalise '"+short_word+"'",
-             re_pattern=re.compile(r"(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")),
+             re_pattern=re.compile(r"(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")+r"[ ~]?\\ref"),
              where=ALL())
     )
     tests.extend([

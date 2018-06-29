@@ -20,9 +20,9 @@ import argparse
 from itertools import chain
 from collections import OrderedDict, defaultdict
 
-from rules import normal_text
-from rules import latex
-from rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
+from cmspubstyle.rules import normal_text
+from cmspubstyle.rules import latex
+from cmspubstyle.rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
 
 
 ALL_RULES = normal_text.rules + latex.rules
