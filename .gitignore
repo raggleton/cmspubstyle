@@ -3,3 +3,4 @@ __pycache__/
 buggy
 *.pyc
 checker_cache.json
+*.egg-info/
