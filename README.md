@@ -1,16 +1,37 @@
-# cms-grammar-checker
+# cmspubstyle
 
 Check your PAS/PAPER/AN against the CMS PubComm guildelines.
 Aims to make language review less embarassing, since no one can remember several TWikis worth of somewhat arbitrary rules.
 
-I bear no responsiblity if this code misses errors
+I bear no responsiblity if this code misses errors.
 
 
 ## Install
 
+Simply do:
+
+```
+pip install cmspubstyle
+```
+
+### Installtion for development
+
+If you want to install the package such that you can easiy modify it, clone the git repository to a location of your choosing.
+Then inside, run 
+
+```
+pip install -e .
+```
 
 ## Running
 
+Run with:
+
+```
+pubcheck.py <location of main TeX file>
+```
+
+The TeX file should be the top one for your paper, e.g. `B2G-17-015.tex`
 
 ## Add new rule
 
