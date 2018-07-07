@@ -17,17 +17,19 @@ import re
 import sys
 import json
 import argparse
-from itertools import chain
 from collections import OrderedDict, defaultdict
 
 from cmspubstyle.rules import normal_text
 from cmspubstyle.rules import latex
-from cmspubstyle.rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND, Text, TextLine, RuleBroken, Rule, TestRule
+from cmspubstyle.rules.classes import Location, ALL, ENVIRONMENT, INLINE, COMMAND
+from cmspubstyle.rules.classes import Text, RuleBroken
 
 
-ALL_RULES = normal_text.rules + latex.rules
+ALL_RULES = normal_text.RULES + latex.RULES
 
-class bcolors:
+
+class TERMCOL:
+    """ASCII str for coloured/styled text in terminal shell"""
     PINK = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -38,8 +40,9 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-def join_textlines(strings):
-    return ''.join([x.text.rstrip('\n') for x in strings])
+def join_textlines(textlines):
+    """Join the test in TextLines, removing newlines at end of lines"""
+    return ''.join([x.text.rstrip('\n') for x in textlines])
 
 
 def create_arg_parser():
@@ -47,7 +50,8 @@ def create_arg_parser():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("input",
-                        help="Main paper/PAS/AN tex file. Will also check every file included with \\input.")
+                        help="Main paper/PAS/AN tex file. "
+                        "Will also check every file included with \\input.")
     parser.add_argument("--doComments",
                         action='store_true',
                         help="Include comment lines in checks")
@@ -88,29 +92,31 @@ def extract_input_files(tex_file):
     return files_dict
 
 
-def report_error(broken_rule, color=bcolors.GREEN, padding=25):
+def report_error(broken_rule, color=TERMCOL.GREEN, padding=25):
     """Print broken rule message on screen, highlight violating part & rule"""
     # print(broken_rule)
-    
+
     line_num_str = str(broken_rule.lines[0].line_num)
     if len(broken_rule.lines) > 1:
         line_num_str += " - " + str(broken_rule.lines[-1].line_num)
-    
+
     match = broken_rule.match
-    
+
     start_ind = match.start() - broken_rule.lines[0].char_num_start + 1
     end_ind = match.end() - broken_rule.lines[0].char_num_start + 1
-    
+
     lines = ''.join([l.text for l in broken_rule.lines])
-    
-    quote_start = max(start_ind-padding, 0)
-    quote_end = min(end_ind+padding, len(lines))
+
+    quote_start = max(start_ind - padding, 0)
+    quote_end = min(end_ind + padding, len(lines))
     error_str = lines[quote_start:start_ind].lstrip()
-    error_str += color + bcolors.UNDERLINE + bcolors.BOLD + match.group(0) + bcolors.ENDC
+    error_str += color + TERMCOL.UNDERLINE + TERMCOL.BOLD + match.group(0) + TERMCOL.ENDC
     error_str += lines[end_ind:quote_end]
     error_str = error_str.rstrip()
-    
-    print("  L"+line_num_str + ":", error_str, bcolors.PINK, "[", broken_rule.rule.description, "]", bcolors.ENDC)
+
+    print("  L" + line_num_str + ":", error_str,
+          TERMCOL.PINK, "[", broken_rule.rule.description, "]",
+          TERMCOL.ENDC)
 
 
 def check_text(text, do_comments):
@@ -118,9 +124,9 @@ def check_text(text, do_comments):
     # locations = list(set([rule.where for rule in chain(normal_text.rules, latex.rules)]))
     # for l in locations:
     #     print(l)
-    
+
     # for x in text.text_contents:
-        # print(x)
+    #     print(x)
     # print(text.text_as_one_line)
 
     for rule in ALL_RULES:
@@ -171,9 +177,9 @@ def check_and_report_errors(text, do_comments):
 
 def print_filename_header(filename):
     """Print header for filename"""
-    separator = "-"*60
+    separator = "-" * 60
     print(separator)
-    print(bcolors.BLUE + filename + bcolors.ENDC)
+    print(TERMCOL.BLUE + filename + TERMCOL.ENDC)
     print(separator)
 
 
@@ -209,15 +215,15 @@ def check_content_files(filenames, do_comments=False):
     return problems_dict
 
 
-def check_bib_files(filenames):
-    return True
+# def check_bib_files(filenames):
+#     return True
 
 
 def print_final_summary(problems_dict, cached_results=None):
     """Print summary for user: # errors per file, and # per error type"""
-    separator = "-"*80
+    separator = "-" * 80
     print(separator)
-    print(bcolors.YELLOW + bcolors.BOLD + "SUMMARY (by file)" + bcolors.ENDC)
+    print(TERMCOL.YELLOW + TERMCOL.BOLD + "SUMMARY (by file)" + TERMCOL.ENDC)
     print(separator)
     max_len = max([len(f) for f in problems_dict])
     max_problems = max([len(p) for p in problems_dict.values()])
@@ -226,34 +232,34 @@ def print_final_summary(problems_dict, cached_results=None):
         num_problems = len(problems)
         num_problems_str = str(num_problems)
         num_dots = max_len + 3 - len(fname) + len(max_problems_str) - len(num_problems_str)
-        err_count_str = fname + "."*num_dots + num_problems_str
+        err_count_str = fname + "." * num_dots + num_problems_str
         # jsut skip if 0 problems?
         # this_col = bcolors.RED if num_problems > 0 else bcolors.GREEN
-        
+
         # Print diff wrt cached results
         change = ""
         if cached_results:
             last_time = cached_results[fname]
             padding = "  "
             if num_problems > last_time:
-                change = bcolors.RED + padding + "^"
+                change = TERMCOL.RED + padding + "^"
             elif num_problems == last_time:
-                change = bcolors.YELLOW + padding + "="
+                change = TERMCOL.YELLOW + padding + "="
             else:
-                change = bcolors.GREEN + padding + "v"
-            change +=  " [was " + str(last_time) + "]" + bcolors.ENDC
+                change = TERMCOL.GREEN + padding + "v"
+            change += " [was " + str(last_time) + "]" + TERMCOL.ENDC
         total_str = err_count_str + change
         print(total_str)
-    
+
     print(separator)
-    print(bcolors.YELLOW + bcolors.BOLD + "SUMMARY (by issue)" + bcolors.ENDC)
+    print(TERMCOL.YELLOW + TERMCOL.BOLD + "SUMMARY (by issue)" + TERMCOL.ENDC)
     print(separator)
     issue_dict = defaultdict(int)
     for problems in problems_dict.values():
         for problem in problems:
             issue_dict[problem.rule.description] += 1
     # Sort by descending # of occurences
-    issue_dict = {k[0]:k[1] for k in sorted(issue_dict.items(), key=lambda x: x[1], reverse=True)}
+    issue_dict = {k[0]: k[1] for k in sorted(issue_dict.items(), key=lambda x: x[1], reverse=True)}
     max_len = max([len(k) for k in issue_dict])
     desc_fmt_str = "{0:<%d}: " % (max_len+1)
     for desc, ind in issue_dict.items():
@@ -261,7 +267,9 @@ def print_final_summary(problems_dict, cached_results=None):
     print(separator)
     total_num_issues = sum(issue_dict.values())
     total_num_bad_files = len([p for p in problems_dict if len(problems_dict[p]) > 0])
-    print(bcolors.YELLOW + bcolors.BOLD + "TOTAL:", total_num_issues, "issues across", total_num_bad_files, "files", bcolors.ENDC)
+    print(TERMCOL.YELLOW + TERMCOL.BOLD + "TOTAL:",
+          total_num_issues, "issues across", total_num_bad_files, "files",
+          TERMCOL.ENDC)
     print(separator)
 
 
@@ -269,7 +277,7 @@ def read_results_from_cache(cache_filename, tex_filename):
     """Get cached results from JSON file"""
     if not os.path.isfile(cache_filename) or os.path.getsize(cache_filename) == 0:
         return None
-    
+
     with open(cache_filename) as f:
         jdict = json.load(f)
         full_text_filename = os.path.abspath(tex_filename)
@@ -279,21 +287,23 @@ def read_results_from_cache(cache_filename, tex_filename):
 
 
 def write_results_to_cache(results, cache_filename, tex_filename):
+    """Save results to cache file for comparison on later runs"""
     full_text_filename = os.path.abspath(tex_filename)
     if os.path.isfile(cache_filename) and os.path.getsize(cache_filename) > 0:
         with open(cache_filename) as f:
             jdict = json.load(f)
     else:
         jdict = {full_text_filename: None}
-    
-    slim_results = {k:len(v) for k, v in results.items()}
+
+    slim_results = {k: len(v) for k, v in results.items()}
     jdict[full_text_filename] = slim_results
-    
+
     with open(cache_filename, 'w') as f:
         json.dump(jdict, f, indent=2)
 
 
 def main(in_args):
+    """Main function to organise all the things, collate results, publish them"""
     parser = create_arg_parser()
     args = parser.parse_args(in_args)
     check_args(args)
@@ -306,14 +316,14 @@ def main(in_args):
     files_dict = extract_input_files(args.input)
     root_results = check_root_file(files_dict['root'])
     content_results = check_content_files(files_dict['contents'], args.doComments)
-    bib_results = check_bib_files(files_dict['bib'])
+    # bib_results = check_bib_files(files_dict['bib'])
 
     root_results.update(content_results)
     print_final_summary(root_results, cached_results)
 
     # write results to cache file
     write_results_to_cache(root_results, cache_filename, args.input)
-    
+
     return 0
 
 

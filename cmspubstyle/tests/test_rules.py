@@ -5,11 +5,12 @@ from cmspubstyle.rules import normal_text
 from cmspubstyle.rules import latex
 
 
-ALL_TESTS = normal_text.tests + latex.tests
+ALL_TESTS = normal_text.TESTS + latex.TESTS
 
 
 @pytest.mark.parametrize("test", ALL_TESTS, ids=[x.rule.description for x in ALL_TESTS])
 def test_a_rule(test):
+    """Test one Rule via a TestRule"""
     rule = test.rule
     pattern = rule.re_pattern
     text = test.text.text_as_one_line
