@@ -5,3 +5,5 @@ buggy
 checker_cache.json
 *.egg-info/
 .vscode
+build
+dist
