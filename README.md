@@ -1,10 +1,9 @@
 # cmspubstyle
 
-Check your PAS/PAPER/AN against the CMS PubComm guildelines.
-Aims to make language review less embarassing, since no one can remember several TWikis worth of somewhat arbitrary rules.
+Check your PAS/PAPER/AN against the CMS PubComm guidelines.
+Aims to make language review less embarrassing, since no one can remember several TWikis worth of somewhat arbitrary rules.
 
-I bear no responsiblity if this code misses errors.
-
+I bear no responsibility if this code misses errors.
 
 ## Install
 
@@ -14,9 +13,9 @@ Simply do:
 pip install cmspubstyle
 ```
 
-### Installtion for development
+### Installation for development
 
-If you want to install the package such that you can easiy modify it, clone the git repository to a location of your choosing.
+If you want to install the package such that you can easily modify it, clone the git repository to a location of your choosing.
 Then inside, run 
 
 ```
@@ -47,7 +46,7 @@ Finally, the `where` arg specifies in what context to apply the rule:
 - `COMMAND(xxx)` for sections inside `\xxx{...}` (e.g. `COMMAND('abstract')` for the abstract)
 
 A rule should have **at least 2** test cases: one case in which it fails the rule, and one case in which it passes the rule.
-Tests for rules are implemente by instances of the `TestRule` class.
+Tests for rules are implemented by instances of the `TestRule` class.
 Each instance must have the `Rule` object which it is testing, the sample text string it is testing against, and whether or not the string should pass the rule (set via the `should_pass` arg).
 
 The more test cases the better!
