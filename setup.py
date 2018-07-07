@@ -13,8 +13,9 @@ setuptools.setup(name='cmspubstyle',
                  packages=setuptools.find_packages(),
                  scripts=['cmspubstyle/pubcheck.py'],
                  classifiers=(
-                     "License :: OSI Approved :: MIT License "
+                     "License :: OSI Approved :: MIT License ",
                      "Programming Language :: Python :: 2.7",
+                     "Programming Language :: Python :: 3.5",
                      "Programming Language :: Python :: 3.6",
                      "Topic :: Scientific/Engineering :: Physics",
                      "Topic :: Text Processing"
