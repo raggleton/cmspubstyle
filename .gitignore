@@ -4,3 +4,4 @@ buggy
 *.pyc
 checker_cache.json
 *.egg-info/
+.vscode
