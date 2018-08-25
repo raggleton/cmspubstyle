@@ -50,7 +50,7 @@ class Text(object):
                                        text=this_line)
                     self.text_contents.append(this_tl)
             # Creation from list of TextLine e.g. from output of another Text
-            elif type(text[0]) == TextLine:
+            elif isinstance(text[0], TextLine):
                 for line in text:
                     # reset char_num_start
                     char_num_start = 1 + sum([len(l.text.rstrip('\n'))
