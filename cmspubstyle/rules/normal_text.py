@@ -221,7 +221,8 @@ TESTS.extend([
 ])
 
 RULES.append(
-    Rule(description="'which' or 'that'?",
+    Rule(description=("'which' or 'that'? Maybe 'that' is better here, "
+                      "or add a comma before which"),
          re_pattern=re.compile(r"(?<!in)(?<!,) +\bwhich", re.IGNORECASE),
          where=ALL())
 )
@@ -229,6 +230,17 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text="background which"),
     TestRule(rule=RULES[-1], text="in which", should_pass=True),
     TestRule(rule=RULES[-1], text=r"background, which", should_pass=True),
+])
+
+RULES.append(
+    Rule(description=("'which' or 'that'? Maybe 'which' is better here, "
+                      "or remove the comma"),
+         re_pattern=re.compile(r", +\bthat", re.IGNORECASE),
+         where=ALL())
+)
+TESTS.extend([
+    TestRule(rule=RULES[-1], text="background, that"),
+    TestRule(rule=RULES[-1], text=r"background that", should_pass=True),
 ])
 
 RULES.append(
@@ -618,7 +630,7 @@ for short_word, full_word in ALWAYS_FULL_WORD:
         TestRule(rule=RULES[-1], text=full_word.lower()+r"~\ref{"),
         TestRule(rule=RULES[-1], text=" the "+full_word.lower()+r"~\ref{"),
         TestRule(rule=RULES[-1], text=r"the "+full_word.lower(), should_pass=True),
-        TestRule(rule=RULES[-1], text=" the cross  "+full_word.lower()+r"~\cite{", should_pass=True),  # we're citing not ref-ing
+        TestRule(rule=RULES[-1], text=" cross "+full_word.lower()+r"~\cite{", should_pass=True),  # we're citing not ref-ing
         TestRule(rule=RULES[-1], text=r"\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=RULES[-1], text=r"\sub"+full_word.lower()+r"{ ", should_pass=True),
@@ -648,7 +660,8 @@ for short_word, full_word in USE_ABBREVIATION:
     ])
 
     RULES.append(
-        Rule(description="Do not abbreviate '"+full_word+"' to '"+short_word+"' when referencing that label at start of sentence.",
+        Rule(description=("Do not abbreviate '"+full_word+"' to '"+short_word+
+                          "' when referencing that label at start of sentence."),
              re_pattern=re.compile(r"\.\s"+short_word.replace(".", r"\.")+r"[ ~]?\\ref"),
              where=ALL())
     )
