@@ -181,7 +181,7 @@ TESTS.extend([
 ##############################################################################
 RULES.append(
     Rule(description="Wrong indefinite article, 'SM' requires 'an'",
-         re_pattern=re.compile(r"a SM", re.IGNORECASE),
+         re_pattern=re.compile(r"a +\bSM\b", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
