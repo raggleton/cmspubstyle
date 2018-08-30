@@ -239,14 +239,20 @@ def print_final_summary(problems_dict, cached_results=None):
         # Print diff wrt cached results
         change = ""
         if cached_results:
-            last_time = cached_results[fname]
+            last_time = cached_results.get(fname, None)
             padding = "  "
-            if num_problems > last_time:
+            if last_time is None:
+                # file didn't exist last time
+                change = TERMCOL.RED + padding + "^"
+            elif num_problems > last_time:
                 change = TERMCOL.RED + padding + "^"
             elif num_problems == last_time:
                 change = TERMCOL.YELLOW + padding + "="
             else:
                 change = TERMCOL.GREEN + padding + "v"
+            if last_time is None:
+                change += " [new file]" + TERMCOL.ENDC
+            else:
             change += " [was " + str(last_time) + "]" + TERMCOL.ENDC
         total_str = err_count_str + change
         print(total_str)
