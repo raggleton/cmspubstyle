@@ -42,7 +42,7 @@ class TERMCOL:
 
 def join_textlines(textlines):
     """Join the test in TextLines, removing newlines at end of lines"""
-    return ''.join([x.text.rstrip('\n') for x in textlines])
+    return ''.join([x.text.rstrip('\n\r') for x in textlines])
 
 
 def create_arg_parser():
