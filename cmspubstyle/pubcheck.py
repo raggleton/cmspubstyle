@@ -253,7 +253,7 @@ def print_final_summary(problems_dict, cached_results=None):
             if last_time is None:
                 change += " [new file]" + TERMCOL.ENDC
             else:
-            change += " [was " + str(last_time) + "]" + TERMCOL.ENDC
+                change += " [was " + str(last_time) + "]" + TERMCOL.ENDC
         total_str = err_count_str + change
         print(total_str)
 
