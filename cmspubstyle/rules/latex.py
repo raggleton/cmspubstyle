@@ -252,11 +252,15 @@ TESTS.extend([
 
 RULES.append(
     Rule(description="Use '\\text{...}' not '{\\text...}'",
-         re_pattern=re.compile(r"\{\\text[^{]*?\}", re.IGNORECASE),
+         re_pattern=re.compile(r"\\text(?!width)[^{]*?\}", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
     TestRule(rule=RULES[-1], text=r"{\text abs}"),
+    TestRule(rule=RULES[-1], text=r"{2\text abs}"),
+    TestRule(rule=RULES[-1], text=r"{2\text\cPqb}"),
     TestRule(rule=RULES[-1], text=r"\text{abs}", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"\textwidth{abs}", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"{\textwidth}", should_pass=True),
     TestRule(rule=RULES[-1], text=r"{\text{abs}}", should_pass=True),
 ])
