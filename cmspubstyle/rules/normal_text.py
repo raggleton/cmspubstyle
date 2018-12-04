@@ -317,13 +317,16 @@ TESTS.extend([
 
 RULES.append(
     Rule(description="Do not start sentence with a symbol",
-         re_pattern=re.compile(r"\.\s[\$\\](?!section)(?!ref)(?!subsection)(?!item)(?!begin)(?!end)"),
+         re_pattern=re.compile(r"\.\s[\$\\](?!section)(?!ref)(?!subsection)(?!item)(?!begin)(?!end)(?!input)"),
          where=ALL())
 )
 TESTS.extend([
     TestRule(rule=RULES[-1], text=r". \Zp"),
     TestRule(rule=RULES[-1], text=".   $N_d$"),
     TestRule(rule=RULES[-1], text=r"a \QLZ", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"\input{intro}", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"\begin{table}", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"\end{table}", should_pass=True),
 ])
 
 RULES.append(
