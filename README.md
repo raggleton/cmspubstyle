@@ -93,7 +93,7 @@ To run the tests, you will need the `pytest` package.
 
 If you do not already have it, install it with `pip install pytest`.
 
-Then, just do `pytest`, and it will automatically run all tests.
+Then, just do `pytest --tb=short -r=f`, and it will automatically run all tests.
 
 ## References
 
