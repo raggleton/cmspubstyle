@@ -453,9 +453,10 @@ SHOULD_BE_FOLLOWED = [
     # ('down', 'quark'),
 ]
 for first, second in SHOULD_BE_FOLLOWED:
+    # special exception for "X tag"
     RULES.append(
         Rule(description="'"+first+"' should be followed by '"+second+"'",
-             re_pattern=re.compile(r"\b"+first+r"\b\s*(?!"+second+r")[\w.']+", re.IGNORECASE),
+             re_pattern=re.compile(r"\b"+first+r"\b\s*(?!"+second+r")(?!tag)[\w.']+", re.IGNORECASE),
              where=ALL())
     )
     TESTS.extend([
@@ -464,6 +465,7 @@ for first, second in SHOULD_BE_FOLLOWED:
         TestRule(rule=RULES[-1], text=first+r" production"),
         TestRule(rule=RULES[-1], text=first+r" cross-section"),
         TestRule(rule=RULES[-1], text=r"the "+first+" "+second+" mass", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"the "+first+" tag", should_pass=True),
     ])
 
 SLANG_WORDS = [
