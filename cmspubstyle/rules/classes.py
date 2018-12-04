@@ -32,6 +32,8 @@ class Text(object):
 
     def __init__(self, text, line_num_start=1):
         self.text_contents = []
+        self.text_as_one_line = ""
+        
         if text:
             # Creation from list of str
             if isinstance(text[0], str):
@@ -63,7 +65,6 @@ class Text(object):
                 raise RuntimeError("Unknown type %s for text arg for Text class "
                                    "- should be list[str] or list[TextLine]" % type(text[0]))
 
-            self.text_as_one_line = ""
             self.create_one_str_from_contents()
 
     def create_one_str_from_contents(self):
@@ -117,7 +118,7 @@ class Text(object):
         Returns TextLine for each occurence of <delim>...<delim>
         """
         matches = list(re.finditer("\\" + delim, self.text_as_one_line))
-        print(matches)
+        # print(matches)
         for match1, match2 in zip(matches[:-1:2], matches[1::2]):
             # Assumes all contents on one TextLine!
             line = self.find_line_with_char_num(match1.start()+1)
@@ -183,7 +184,7 @@ class Text(object):
 class Location(object):
     """Abstract base class for any section/type of text to be searched"""
     def __init__(self, opt=None):
-        self.opt = opt
+        self.opt = opt  # generic option arg?
 
     def __hash__(self):
         return hash(self.opt)
