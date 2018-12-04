@@ -487,7 +487,7 @@ SLANG_WORDS = [
 for slang_word, better_word in SLANG_WORDS:
     RULES.append(
         Rule(description="Avoid '"+slang_word+"', prefer e.g. '"+better_word+"'",
-             re_pattern=re.compile(r"(?<!:)\b"+slang_word+r"\b(?!})", re.IGNORECASE),
+             re_pattern=re.compile(r"(?<!:)\b"+slang_word+r"\b(?!})(?!-and-count)", re.IGNORECASE),
              where=ALL())
     )
     TESTS.extend([
@@ -496,6 +496,10 @@ for slang_word, better_word in SLANG_WORDS:
         TestRule(rule=RULES[-1], text=r"the f"+slang_word+"ery is", should_pass=True),
         TestRule(rule=RULES[-1], text=r"\ref{sec:"+slang_word+"}", should_pass=True),
     ])
+    if slang_word == "cut":
+        TESTS.extend([
+            TestRule(rule=RULES[-1], text=r"the "+slang_word+"-and-count", should_pass=True),
+        ])
 
 DOUBLE_SLANG_WORDS = [
     ("coupling constant", "coupling strength"),
