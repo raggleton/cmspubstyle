@@ -14,7 +14,8 @@ RULES, TESTS = [], []
 ##############################################################################
 RULES.append(
     Rule(description="Duplicate words",
-         re_pattern=re.compile(r"\b(\w+)\b[\s.,]+\b\1\b", re.IGNORECASE),
+         # our definition of a "word" is something with at least 1 letter, any # of digits
+         re_pattern=re.compile(r"\b(\w*[a-zA-Z]\w*)\b[\s.,]+\b\1\b", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
@@ -25,6 +26,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=" the  THE,"),
     TestRule(rule=RULES[-1], text=" however, however "),
     TestRule(rule=RULES[-1], text=" the. Then ", should_pass=True),
+    TestRule(rule=RULES[-1], text=" 3.3 ", should_pass=True),
 ])
 
 # RULES.append(
