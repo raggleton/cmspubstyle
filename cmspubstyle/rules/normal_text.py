@@ -164,15 +164,17 @@ for word in UNHYPHENATED:
     ])
 
 # UNHYPHENATED SINGLE WORDS
-
+# TODO: how to handle longer words?
 # SHOULD BE HYPHENATED
 RULES.append(
     Rule(description="Missing hyphenation",
-         re_pattern=re.compile(r" \w tagged", re.IGNORECASE),
+         re_pattern=re.compile(r"[\w}$]+(?<!the) tagged", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
     TestRule(rule=RULES[-1], text=" b tagged"),
+    TestRule(rule=RULES[-1], text=r" $\PH$ tagged"),
+    TestRule(rule=RULES[-1], text=r" $\PH$-tagged", should_pass=True),
     TestRule(rule=RULES[-1], text=r"Higgs-tagged", should_pass=True),
     TestRule(rule=RULES[-1], text="the tagged", should_pass=True),
 ])
