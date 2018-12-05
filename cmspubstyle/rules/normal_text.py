@@ -150,12 +150,13 @@ for word in UNHYPHENATED:
     pre, post = word.split("|")
     RULES.append(
         Rule(description="Unnecessary hyphenation",
-             re_pattern=re.compile(pre+"-"+post+r"\b", re.IGNORECASE),
+             re_pattern=re.compile(pre+r"[$}]?-"+post+r"\b", re.IGNORECASE),
              where=ALL())
     )
     TESTS.extend([
         TestRule(rule=RULES[-1], text=pre+"-"+post),
-        # TestRule(rule=RULES[-1], text=r"\cPQ"+pre+"-"+post),
+        TestRule(rule=RULES[-1], text=r"$\cPQ"+pre+"$-"+post),
+        TestRule(rule=RULES[-1], text=r"{\cPQ"+pre+"}-"+post),
         TestRule(rule=RULES[-1], text=pre+" "+post, should_pass=True),
         TestRule(rule=RULES[-1], text=pre+"  "+post, should_pass=True),
         TestRule(rule=RULES[-1], text="blahblah "+post, should_pass=True),
