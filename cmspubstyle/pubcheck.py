@@ -267,7 +267,7 @@ def print_final_summary(problems_dict, cached_results=None):
     # Sort by descending # of occurences
     issue_dict = {k[0]: k[1] for k in sorted(issue_dict.items(), key=lambda x: x[1], reverse=True)}
     max_len = max([len(k) for k in issue_dict])
-    desc_fmt_str = "{0:<%d}: " % (max_len+1)
+    desc_fmt_str = "{0:.<%d}" % (max_len+2)
     for desc, ind in issue_dict.items():
         print(desc_fmt_str.format(desc), ind)
     print(separator)
