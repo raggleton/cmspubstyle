@@ -144,53 +144,22 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r"\etmiss", should_pass=True),
 ])
 
-RULES.append(
-    Rule(description="Use '\\MeV' instead of 'MeV'",
-         re_pattern=re.compile(r"(?<!\\)MeV"),
-         where=ALL())
-)
-TESTS.extend([
-    TestRule(rule=RULES[-1], text=r"22MeV$"),
-    TestRule(rule=RULES[-1], text=r"22 MeV$"),
-    TestRule(rule=RULES[-1], text=r"22 MeVc$"),
-    TestRule(rule=RULES[-1], text=r"22 MeVcc$"),
-    TestRule(rule=RULES[-1], text=r"36\MeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36 \MeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\MeVc", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\MeVcc", should_pass=True),
-])
-
-RULES.append(
-    Rule(description="Use '\\GeV' instead of 'GeV'",
-         re_pattern=re.compile(r"(?<!\\)GeV"),
-         where=ALL())
-)
-TESTS.extend([
-    TestRule(rule=RULES[-1], text=r"22GeV$"),
-    TestRule(rule=RULES[-1], text=r"22 GeV$"),
-    TestRule(rule=RULES[-1], text=r"22 GeVc$"),
-    TestRule(rule=RULES[-1], text=r"22 GeVcc$"),
-    TestRule(rule=RULES[-1], text=r"36\GeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36 \GeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\GeVc", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\GeVcc", should_pass=True),
-])
-
-RULES.append(
-    Rule(description="Use '\\TeV' instead of 'TeV'",
-         re_pattern=re.compile(r"(?<!\\)TeV"),
-         where=ALL())
-)
-TESTS.extend([
-    TestRule(rule=RULES[-1], text=r"22TeV$"),
-    TestRule(rule=RULES[-1], text=r"22 TeV$"),
-    TestRule(rule=RULES[-1], text=r"22 TeVc$"),
-    TestRule(rule=RULES[-1], text=r"22 TeVcc$"),
-    TestRule(rule=RULES[-1], text=r"36\TeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36 \TeV", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\TeVc", should_pass=True),
-    TestRule(rule=RULES[-1], text=r"36\TeVcc", should_pass=True),
-])
+for prepend in ["k", "M", "G", "T", "P"]:
+    RULES.append(
+        Rule(description="Use '\\{0}eV' instead of '{0}eV'".format(prepend),
+             re_pattern=re.compile(r"(?<!\\)"+prepend+r"eV"),
+             where=ALL())
+    )
+    TESTS.extend([
+        TestRule(rule=RULES[-1], text=r"22"+prepend+r"eV$"),
+        TestRule(rule=RULES[-1], text=r"22 "+prepend+r"eV$"),
+        TestRule(rule=RULES[-1], text=r"22 "+prepend+r"eVc$"),
+        TestRule(rule=RULES[-1], text=r"22 "+prepend+r"eVcc$"),
+        TestRule(rule=RULES[-1], text=r"36\\"+prepend+r"eV", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"36 \\"+prepend+r"eV", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"36\\"+prepend+r"eVc", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"36\\"+prepend+r"eVcc", should_pass=True),
+    ])
 
 RULES.append(
     Rule(description="Do not use '\\frac' inline, use '/'",
