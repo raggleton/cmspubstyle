@@ -149,12 +149,10 @@ def check_text(text, do_comments):
             #         for match, lines in this_cmd_text.find_iter(rule.re_pattern):
             #             yield RuleBroken(rule=rule, match=match, lines=lines)
 
-            # elif isinstance(location, INLINE):
-            #     print('doing', location)
-            #     for this_cmd_text in text.iter_inline_delim(location.opt):
-            #         print(this_cmd_text)
-            #         for match, lines in this_cmd_text.find_iter(rule.re_pattern):
-            #             yield RuleBroken(rule=rule, match=match, lines=lines)
+            elif isinstance(location, INLINE):
+                for this_cmd_text in text.iter_inline_delim(location.opt):
+                    for match, lines in this_cmd_text.find_iter(rule.re_pattern):
+                        yield RuleBroken(rule=rule, match=match, lines=lines)
 
             # elif isinstance(location, ENVIRONMENT):
             #     print('doing', location)
