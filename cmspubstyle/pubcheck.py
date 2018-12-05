@@ -76,7 +76,7 @@ def extract_input_files(tex_file):
     files_dict['bib'] = os.path.splitext(tex_file)[0] + ".bib"
 
     # included files with main contents
-    files_dict['contents'] = []
+    files_dict['contents'] = [tex_file]
     input_pattern = re.compile(r"\\input\s*{(.+)}")
     with open(tex_file) as f:
         for line in f:
