@@ -95,6 +95,20 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text="Randall--Sundrum", should_pass=True),
 ])
 
+for cmd in ['ref', 'cite']:
+    RULES.append(
+        Rule(description="Use ~ before \\%s" % (cmd),
+             re_pattern=re.compile(r"[^~]\\"+cmd, re.IGNORECASE),
+             where=ALL())
+    )
+    TESTS.extend([
+        # Not raw strings, as getting the \ correct is a PITA
+        TestRule(rule=RULES[-1], text="Section \\"+cmd),
+        TestRule(rule=RULES[-1], text="Section\\"+cmd),
+        TestRule(rule=RULES[-1], text="Section~\\"+cmd+r"{blah}", should_pass=True),
+    ])
+
+
 ##############################################################################
 # SYMBOLS
 ##############################################################################
