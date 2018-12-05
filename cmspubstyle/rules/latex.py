@@ -236,3 +236,36 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r"{\textwidth}", should_pass=True),
     TestRule(rule=RULES[-1], text=r"{\text{abs}}", should_pass=True),
 ])
+
+RULES.append(
+    Rule(description="Don't put single numbers in $...$",
+         re_pattern=re.compile(r"^ ?[0-9.-]+ ?$", re.IGNORECASE),
+         where=INLINE("$"))
+)
+TESTS.extend([
+    TestRule(rule=RULES[-1], text=r"9"),
+    TestRule(rule=RULES[-1], text=r" 9 "),
+    TestRule(rule=RULES[-1], text=r"-3.3"),
+    TestRule(rule=RULES[-1], text=r"4.1 \pm 5.1", should_pass=True),
+])
+
+RULES.append(
+    Rule(description="Don't put number+% in $...$",
+         re_pattern=re.compile(r"^[0-9. -]*\\%$", re.IGNORECASE),
+         where=INLINE("$"))
+)
+TESTS.extend([
+    TestRule(rule=RULES[-1], text=r"9\%"),
+    TestRule(rule=RULES[-1], text=r"-3.3 \%"),
+    TestRule(rule=RULES[-1], text=r"4.1 \pm 5.1\%", should_pass=True),
+])
+
+RULES.append(
+    Rule(description="Don't put solo \\pt in $...$",
+         re_pattern=re.compile(r"^\\pt$", re.IGNORECASE),
+         where=INLINE("$"))
+)
+TESTS.extend([
+    TestRule(rule=RULES[-1], text=r"\pt"),
+    TestRule(rule=RULES[-1], text=r"3 \pt", should_pass=True),
+])
