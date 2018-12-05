@@ -155,6 +155,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r"22 MeVc$"),
     TestRule(rule=RULES[-1], text=r"22 MeVcc$"),
     TestRule(rule=RULES[-1], text=r"36\MeV", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"36 \MeV", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\MeVc", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\MeVcc", should_pass=True),
 ])
@@ -170,6 +171,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r"22 GeVc$"),
     TestRule(rule=RULES[-1], text=r"22 GeVcc$"),
     TestRule(rule=RULES[-1], text=r"36\GeV", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"36 \GeV", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\GeVc", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\GeVcc", should_pass=True),
 ])
@@ -185,6 +187,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r"22 TeVc$"),
     TestRule(rule=RULES[-1], text=r"22 TeVcc$"),
     TestRule(rule=RULES[-1], text=r"36\TeV", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"36 \TeV", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\TeVc", should_pass=True),
     TestRule(rule=RULES[-1], text=r"36\TeVcc", should_pass=True),
 ])
@@ -193,7 +196,7 @@ RULES.append(
     Rule(description="Do not use '\\frac' inline, use '/'",
          # FIXME: make this INLINE
          re_pattern=re.compile(r"\\frac"),
-         where=ALL())
+         where=INLINE("$"))
 )
 TESTS.extend([
     TestRule(rule=RULES[-1], text=r"$ a_{b} \frac{1}{2}$"),
@@ -216,8 +219,8 @@ for func_name in COMMON_FUNC_NAMES:
         Rule(description="Use macro '\\"+func_name+"'",
              re_pattern=re.compile(r"(?<!\\)"+func_name+r"[^\w\-]"),
              # re_pattern=re.compile(r"(?<!\\)"+func_name+r"\s*?(\\|\(|\[)"),
-             where=ALL())
-             # where=[INLINE("$"), COMMAND("EQUATION")])
+            #  where=ALL())
+             where=[INLINE("$"), COMMAND("EQUATION")])
     )
     TESTS.extend([
         TestRule(rule=RULES[-1], text=r"$\\times "+func_name+r"(x)$"),
