@@ -513,12 +513,13 @@ DOUBLE_SLANG_WORDS = [
     ("Higgs tagging", "Higgs boson tagging/H tagging"),
     ("top tagging", "top quark tagging/t tagging"),
     ("uncertainty on", "uncertainty in"),
+    ("uncertainties on", "uncertainty in"),
 ]
 for slang_word, better_word in DOUBLE_SLANG_WORDS:
     parts = slang_word.split()
     RULES.append(
         Rule(description="Avoid '"+slang_word+"', instead '"+better_word+"'",
-             re_pattern=re.compile(r"\b"+parts[0]+r"\b\s\b"+parts[1], re.IGNORECASE),
+             re_pattern=re.compile(r"\b"+parts[0]+r"\b\s\b"+parts[1]+r"\b", re.IGNORECASE),
              where=ALL())
     )
     TESTS.extend([
@@ -526,12 +527,13 @@ for slang_word, better_word in DOUBLE_SLANG_WORDS:
         TestRule(rule=RULES[-1], text=r"the "+slang_word.replace(" ", "    ")+"."),
         TestRule(rule=RULES[-1], text=r"the "+slang_word+"."),
         TestRule(rule=RULES[-1], text=r"."+slang_word+" was"),
+        TestRule(rule=RULES[-1], text=r"."+slang_word+"xxx was", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+better_word+" was", should_pass=True),
     ])
 
 RULES.append(
     Rule(description="Avoid 'error', instead 'uncertianty'",
-         re_pattern=re.compile(r"\berror[s]?\b[\s\.]*?\b(?!bar)(?!band)[\w.']+", re.IGNORECASE),
+         re_pattern=re.compile(r"\berror[s]?\b[\s\.]*?\b(?!bar)(?!band)(?!function)[\w.']+", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
