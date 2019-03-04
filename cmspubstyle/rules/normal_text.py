@@ -135,6 +135,7 @@ UNHYPHENATED = [
     "invariant|mass",
     "jet|energy",
     "jet|energy",
+    "jet|substructure",
     # "$K$|factor",
     "lead|tungstate",
     "Monte|Carlo",
@@ -144,6 +145,7 @@ UNHYPHENATED = [
     "top|quark",
     "W|boson",
     "Z|boson",
+    "soft|drop",
 ]
 
 for word in UNHYPHENATED:
@@ -167,9 +169,10 @@ for word in UNHYPHENATED:
 # UNHYPHENATED SINGLE WORDS
 # TODO: how to handle longer words?
 # SHOULD BE HYPHENATED
+# "semi|leptonic",
 RULES.append(
     Rule(description="Missing hyphenation",
-         re_pattern=re.compile(r"[\w}$]+(?<!the) tagged", re.IGNORECASE),
+         re_pattern=re.compile(r"[\w}$]+(?<!the) tagged(?!.)(?!,)(?!-)(?!;)", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
@@ -178,6 +181,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text=r" $\PH$-tagged", should_pass=True),
     TestRule(rule=RULES[-1], text=r"Higgs-tagged", should_pass=True),
     TestRule(rule=RULES[-1], text="the tagged", should_pass=True),
+    TestRule(rule=RULES[-1], text=" b tagged.", should_pass=True),  # end of sentence, not an attributive adjective
 ])
 
 
