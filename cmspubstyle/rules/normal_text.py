@@ -704,12 +704,13 @@ for short_word, full_word in USE_ABBREVIATION:
         TestRule(rule=RULES[-1], text=r"\begin{"+full_word.lower()+r"}", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+full_word+r"~\ref ", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+full_word+" shows", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"the "+full_word+"s show", should_pass=True),
         TestRule(rule=RULES[-1], text=r"abc"+full_word+"def", should_pass=True),
     ])
 
     RULES.append(
         Rule(description="Always capitalise '"+short_word+"'",
-             re_pattern=re.compile(r"(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")+r"[ ~]?\\ref"),
+             re_pattern=re.compile(r"(?<!{)(?<!\\)"+short_word.lower().replace(".", r"\.")),
              where=ALL())
     )
     TESTS.extend([
@@ -721,5 +722,6 @@ for short_word, full_word in USE_ABBREVIATION:
         TestRule(rule=RULES[-1], text=r"\begin{"+short_word.lower()+r"}", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+short_word+r"~\ref ", should_pass=True),
         TestRule(rule=RULES[-1], text=r"the "+short_word+" shows", should_pass=True),
+        TestRule(rule=RULES[-1], text=r"the "+short_word+"s shows", should_pass=True),
         TestRule(rule=RULES[-1], text=r"abc"+short_word+"def", should_pass=True),
     ])
