@@ -232,7 +232,7 @@ TESTS.extend([
 RULES.append(
     Rule(description=("'which' or 'that'? Maybe 'that' is better here, "
                       "or add a comma before which"),
-         re_pattern=re.compile(r"(?<!in)(?<!,) +\bwhich", re.IGNORECASE),
+         re_pattern=re.compile(r"(?<!in)(?<!of)(?<!,) +\bwhich", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
