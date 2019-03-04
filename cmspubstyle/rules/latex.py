@@ -66,7 +66,7 @@ TESTS.extend([
 # DASHES
 RULES.append(
     Rule(description="Use en dash -- for numerical range",
-         re_pattern=re.compile(r"(?<![\w\d-])[\d.]+\s?(-|---)\s?[\d.]+"),
+         re_pattern=re.compile(r"(?<![\w\d-])[\d.]+\s?(-|---)\s?[\d.]+[^-]"),
          where=ALL())
 )
 TESTS.extend([
@@ -76,6 +76,7 @@ TESTS.extend([
     TestRule(rule=RULES[-1], text="6 - 7"),
     TestRule(rule=RULES[-1], text="6---7"),
     TestRule(rule=RULES[-1], text="6 -- 7", should_pass=True),
+    TestRule(rule=RULES[-1], text="12-8-2017", should_pass=True),
     TestRule(rule=RULES[-1], text=r"\cite{CMS-PAS-17-01}", should_pass=True),
     TestRule(rule=RULES[-1], text="6--7", should_pass=True),
     TestRule(rule=RULES[-1], text="6.1--7.2", should_pass=True),
