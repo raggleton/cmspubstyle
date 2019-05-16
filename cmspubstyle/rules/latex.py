@@ -99,7 +99,7 @@ TESTS.extend([
 for cmd in ['ref', 'cite']:
     RULES.append(
         Rule(description="Use ~ before \\%s" % (cmd),
-             re_pattern=re.compile(r"[^~]\\"+cmd, re.IGNORECASE),
+             re_pattern=re.compile(r"(?<!~)(?<!~\()\\"+cmd, re.IGNORECASE),
              where=ALL())
     )
     TESTS.extend([
@@ -107,6 +107,7 @@ for cmd in ['ref', 'cite']:
         TestRule(rule=RULES[-1], text="Section \\"+cmd),
         TestRule(rule=RULES[-1], text="Section\\"+cmd),
         TestRule(rule=RULES[-1], text="Section~\\"+cmd+r"{blah}", should_pass=True),
+        TestRule(rule=RULES[-1], text="Eq.~(\\"+cmd+r"{blah}", should_pass=True),
     ])
 
 
