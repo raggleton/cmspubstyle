@@ -151,7 +151,7 @@ UNHYPHENATED = [
 for word in UNHYPHENATED:
     pre, post = word.split("|")
     RULES.append(
-        Rule(description="Unnecessary hyphenation",
+        Rule(description="Incorrect hyphenation, should be two separate words",
              re_pattern=re.compile(pre+r"[$}]?-"+post+r"\b", re.IGNORECASE),
              where=ALL())
     )
@@ -232,13 +232,15 @@ TESTS.extend([
 RULES.append(
     Rule(description=("'which' or 'that'? Maybe 'that' is better here, "
                       "or add a comma before which"),
-         re_pattern=re.compile(r"(?<!in)(?<!of)(?<!,) +\bwhich", re.IGNORECASE),
+         re_pattern=re.compile(r"(?<!in)(?<!of)(?<!for)(?<!from)(?<!,) +\bwhich", re.IGNORECASE),
          where=ALL())
 )
 TESTS.extend([
     TestRule(rule=RULES[-1], text="background which"),
     TestRule(rule=RULES[-1], text="in which", should_pass=True),
     TestRule(rule=RULES[-1], text=r"background, which", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"for which", should_pass=True),
+    TestRule(rule=RULES[-1], text=r"from which a", should_pass=True),
 ])
 
 RULES.append(
